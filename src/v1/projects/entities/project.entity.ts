@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 export type ProjectDocument = Project & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Project {
     @Prop({ required: true })
     id: string;
@@ -11,7 +11,7 @@ export class Project {
     @Prop({ required: true })
     title: string;
 
-    @Prop({ required: true, unique: true })
+    @Prop({ required: true })
     slug: string;
 
     @Prop({ required: true })
@@ -38,16 +38,16 @@ export class Project {
     @Prop({ type: [String], required: true })
     technologies: string[];
 
-    @Prop({ default: null })
+    @Prop({ type: String, default: null })
     liveUrl?: string | null;
 
-    @Prop({ default: null })
+    @Prop({ type: String, default: null })
     githubUrl?: string | null;
 
-    @Prop({ default: null })
+    @Prop({ type: String, default: null })
     fgithubUrl?: string | null;
 
-    @Prop({ default: null })
+    @Prop({ type: String, default: null })
     bgithubUrl?: string | null;
 
     @Prop({ type: [String], required: true })

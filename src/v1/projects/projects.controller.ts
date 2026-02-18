@@ -7,13 +7,14 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { successHandler } from 'src/utils/successHandler';
 
-@ApiTags('Projects')
+
 @Controller('projects')
+@ApiTags('Projects')
 export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) { }
 
   @Post('create')
-  @ApiOperation({ summary: 'Create a new project' })
+  @ApiOperation({ summary: 'Create a new project', description: 'Store a new project entry in the database with full details.' })
   @ApiResponse({ status: 201, description: 'The project has been successfully created.' })
   async create(@Body() createProjectDto: CreateProjectDto, @Res() res: Response) {
     const result = await this.projectsService.create(createProjectDto);
@@ -26,10 +27,10 @@ export class ProjectsController {
   }
 
   @Get('all')
-  @ApiOperation({ summary: 'Get all projects' })
-  @ApiResponse({ status: 200, description: 'Return all projects.' })
-  findAll(@Res() res: Response) {
-    const result = this.projectsService.findAll();
+  @ApiOperation({ summary: 'Get all projects', description: 'Fetch a list of all projects available in the system.' })
+  @ApiResponse({ status: 200, description: 'Returns all project records.' })
+  async findAll(@Res() res: Response) {
+    const result = await this.projectsService.findAll();
     return successHandler({
       res,
       statusCode: HttpStatus.OK,
@@ -39,11 +40,12 @@ export class ProjectsController {
   }
 
   @Get('one/:id')
-  @ApiOperation({ summary: 'Get a project by id' })
-  @ApiParam({ name: 'id', description: 'Project ID' })
-  @ApiResponse({ status: 200, description: 'Return a single project.' })
-  findOne(@Param('id') id: string, @Res() res: Response) {
-    const result = this.projectsService.findOne(id);
+  @ApiOperation({ summary: 'Get a project by id', description: 'Retrieve details of a specific project by its unique ID.' })
+  @ApiParam({ name: 'id', description: 'Unique Project ID', example: 'id' })
+  @ApiResponse({ status: 200, description: 'Found record details.' })
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    const result = await this.projectsService.findOne(id);
+    console.log(result);
     return successHandler({
       res,
       statusCode: HttpStatus.OK,
@@ -53,11 +55,11 @@ export class ProjectsController {
   }
 
   @Patch('update/:id')
-  @ApiOperation({ summary: 'Update a project' })
-  @ApiParam({ name: 'id', description: 'Project ID' })
-  @ApiResponse({ status: 200, description: 'The project has been successfully updated.' })
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto, @Res() res: Response) {
-    const result = this.projectsService.update(id, updateProjectDto);
+  @ApiOperation({ summary: 'Update a project', description: 'Modify an existing project entry.' })
+  @ApiParam({ name: 'id', description: 'Unique Project ID', example: 'proj-001' })
+  @ApiResponse({ status: 200, description: 'The project record has been updated.' })
+  async update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto, @Res() res: Response) {
+    const result = await this.projectsService.update(id, updateProjectDto);
     return successHandler({
       res,
       statusCode: HttpStatus.OK,
@@ -67,11 +69,11 @@ export class ProjectsController {
   }
 
   @Delete('delete/:id')
-  @ApiOperation({ summary: 'Delete a project' })
-  @ApiParam({ name: 'id', description: 'Project ID' })
-  @ApiResponse({ status: 200, description: 'The project has been successfully deleted.' })
-  remove(@Param('id') id: string, @Res() res: Response) {
-    const result = this.projectsService.remove(id);
+  @ApiOperation({ summary: 'Delete a project', description: 'Permanently remove a project entry.' })
+  @ApiParam({ name: 'id', description: 'Unique Project ID', example: 'proj-001' })
+  @ApiResponse({ status: 200, description: 'Record has been removed.' })
+  async remove(@Param('id') id: string, @Res() res: Response) {
+    const result = await this.projectsService.remove(id);
     return successHandler({
       res,
       statusCode: HttpStatus.OK,

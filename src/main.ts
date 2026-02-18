@@ -4,7 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+
 
 async function main() {
   const port = process.env.PORT ?? 5000;
@@ -12,9 +12,6 @@ async function main() {
 
   // Global Filter
   app.useGlobalFilters(new HttpExceptionFilter());
-
-  // Global Interceptor
-  app.useGlobalInterceptors(new TransformInterceptor());
 
   // Global Validation Pipe
   app.useGlobalPipes(
