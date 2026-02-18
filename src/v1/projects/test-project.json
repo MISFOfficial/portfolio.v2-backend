@@ -1,0 +1,57 @@
+{
+    "id": "project-001",
+    "title": "Portfolio v2",
+    "slug": "portfolio-v2",
+    "image": "https://example.com/image.jpg",
+    "tags": [
+        "FullStack",
+        "Next.js",
+        "NestJS"
+    ],
+    "year": "2026",
+    "badge": {
+        "text": "New",
+        "color": "blue"
+    },
+    "overlayText": "Modern Portfolio",
+    "description": "A feature-rich personal portfolio backend.",
+    "fullDescription": "Detailed description of the portfolio v2 project, explaining its architecture, features, and technical challenges.",
+    "technologies": [
+        "TypeScript",
+        "NestJS",
+        "MongoDB",
+        "Express"
+    ],
+    "liveUrl": "https://portfolio.example.com",
+    "githubUrl": "https://github.com/user/portfolio",
+    "features": [
+        "Dynamic Content",
+        "Responsive Design",
+        "Secure API"
+    ],
+    "role": "Lead Developer",
+    "architecture": {
+        "frontend": "Next.js",
+        "backend": "NestJS",
+        "database": "MongoDB",
+        "infrastructure": [
+            "Vercel",
+            "Railway"
+        ]
+    },
+    "problemSolution": {
+        "problem": "Difficulty in managing portfolio content dynamically.",
+        "solution": "Built a custom CMS using NestJS and MongoDB."
+    },
+    "metrics": [
+        {
+            "label": "Performance",
+            "value": "98%",
+            "description": "Lighthouse score"
+        }
+    ],
+    "lessons": [
+        "Learned to implement consistent error handling in NestJS.",
+        "Mastered Mongoose Schema definitions."
+    ]
+}
