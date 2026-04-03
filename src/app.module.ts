@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { ProjectsModule } from './v1/projects/projects.module';
-
+import { ExperiencesModule } from './v1/experiences/experiences.module';
 
 @Module({
   imports: [
@@ -13,7 +13,8 @@ import { ProjectsModule } from './v1/projects/projects.module';
     MongooseModule.forRoot(process.env.MONGODB_URL!, {
       dbName: 'mukstul',
     }),
-    ProjectsModule
+    ProjectsModule,
+    ExperiencesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
