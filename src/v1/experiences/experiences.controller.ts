@@ -17,7 +17,7 @@ import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
 import { successHandler } from 'src/utils/successHandler';
 
-@Controller('v1/experiences')
+@Controller('experiences')
 @ApiTags('Experiences')
 export class ExperiencesController {
   constructor(private readonly experiencesService: ExperiencesService) {}
