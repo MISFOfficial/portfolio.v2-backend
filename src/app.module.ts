@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -23,17 +23,10 @@ import { envConfig } from './config/env';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply((req, res, next) => {
-        if (req.path.includes('experiences/create')) {
-          console.log('--- GLOBAL REQUEST LOG ---');
-          console.log('Path:', req.path);
-          console.log('Headers:', req.headers['content-type']);
-        }
-        next();
-      })
-      .forRoutes('*');
+export class AppModule implements OnModuleInit {
+  onModuleInit() {
+    mongoose.connection.on('connected', () => {
+      console.log('MongoDB connected successfully');
+    });
   }
 }

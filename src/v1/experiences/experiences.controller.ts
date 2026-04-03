@@ -96,9 +96,6 @@ export class ExperiencesController {
       images,
     );
 
-    console.log('--- Result Data ---');
-    console.log(result);
-
     return successHandler({
       res,
       statusCode: HttpStatus.CREATED,
@@ -200,9 +197,6 @@ export class ExperiencesController {
       updateExperienceDto,
       images,
     );
-
-    console.log('--- Result Data (Update) ---');
-    console.log(result);
     return successHandler({
       res,
       statusCode: HttpStatus.OK,
