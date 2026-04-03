@@ -4,15 +4,28 @@ import { Model } from 'mongoose';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Project, ProjectDocument } from './entities/project.entity';
+import { ImageService } from 'src/image/image.service';
 
 @Injectable()
 export class ProjectsService {
   constructor(
-    @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
-  ) { }
+    @InjectModel(Project.name)
+    private projectModel: Model<ProjectDocument>,
+    private readonly imageService: ImageService,
+  ) {}
 
-  async create(createProjectDto: CreateProjectDto): Promise<Project> {
-    const createdProject = new this.projectModel(createProjectDto);
+  async create(
+    createProjectDto: CreateProjectDto,
+    images?: Express.Multer.File[],
+  ): Promise<Project> {
+    const projectData: any = { ...createProjectDto };
+
+    if (images && images.length > 0) {
+      const uploadedImages = await this.imageService.createMultiple(images);
+      projectData.images = uploadedImages.map((img) => img.url);
+    }
+
+    const createdProject = new this.projectModel(projectData);
     return createdProject.save();
   }
 
@@ -20,32 +33,43 @@ export class ProjectsService {
     return this.projectModel.find().exec();
   }
 
-  async findOne(_id: string): Promise<Project> {
-    const project = await this.projectModel.findOne({ _id });
+  async findOne(id: string): Promise<Project> {
+    const project = await this.projectModel.findOne({ id }).exec();
     if (!project) {
-      throw new NotFoundException(`Project with _ID ${_id} not found`);
+      throw new NotFoundException(`Project with ID ${id} not found`);
     }
     return project;
   }
 
-  async update(_id: string, updateProjectDto: UpdateProjectDto): Promise<Project> {
+  async update(
+    id: string,
+    updateProjectDto: UpdateProjectDto,
+    images?: Express.Multer.File[],
+  ): Promise<Project> {
+    const projectData: any = { ...updateProjectDto };
+
+    if (images && images.length > 0) {
+      const uploadedImages = await this.imageService.createMultiple(images);
+      const newImageUrls = uploadedImages.map((img) => img.url);
+
+      const existingProject = await this.findOne(id);
+      projectData.images = [...(existingProject.images || []), ...newImageUrls];
+    }
+
     const updatedProject = await this.projectModel
-      .findOneAndUpdate({ _id }, updateProjectDto, { new: true })
+      .findOneAndUpdate({ id }, projectData, { new: true })
       .exec();
     if (!updatedProject) {
-      throw new NotFoundException(`Project with _ID ${_id} not found`);
+      throw new NotFoundException(`Project with ID ${id} not found`);
     }
     return updatedProject;
   }
 
-  async remove(_id: string): Promise<any> {
-    const result = await this.projectModel.deleteOne({ _id }).exec();
+  async remove(id: string): Promise<any> {
+    const result = await this.projectModel.deleteOne({ id }).exec();
     if (result.deletedCount === 0) {
-      throw new NotFoundException(`Project with _ID ${_id} not found`);
+      throw new NotFoundException(`Project with ID ${id} not found`);
     }
     return { deleted: true };
   }
 }
-
-
-

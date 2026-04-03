@@ -8,8 +8,18 @@ import {
   Delete,
   HttpStatus,
   Res,
+  UseInterceptors,
+  UploadedFiles,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags, ApiParam } from '@nestjs/swagger';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import {
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiParam,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import type { Response } from 'express';
 
 import { ExperiencesService } from './experiences.service';
@@ -26,18 +36,48 @@ export class ExperiencesController {
   @ApiOperation({
     summary: 'Create a new experience',
     description:
-      'Store a new experience entry in the database with full details.',
+      'Store a new experience entry in the database with full details and multiple images.',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        images: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+        },
+        id: { type: 'string' },
+        company: { type: 'string' },
+        role: { type: 'string' },
+        duration: { type: 'string' },
+        location: { type: 'string' },
+        logo: { type: 'string' },
+        description: { type: 'string' },
+        teamSize: { type: 'string' },
+        companyDescription: { type: 'string' },
+        companyWebsite: { type: 'string' },
+        responsibilities: { type: 'array', items: { type: 'string' } },
+        technologies: { type: 'array', items: { type: 'string' } },
+        achievements: { type: 'array', items: { type: 'string' } },
+      },
+    },
   })
   @ApiResponse({
     status: 201,
     description: 'The experience has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
+  @UseInterceptors(FilesInterceptor('images'))
   async create(
     @Body() createExperienceDto: CreateExperienceDto,
+    @UploadedFiles() images: Express.Multer.File[],
     @Res() res: Response,
   ) {
-    const result = await this.experiencesService.create(createExperienceDto);
+    const result = await this.experiencesService.create(
+      createExperienceDto,
+      images,
+    );
     return successHandler({
       res,
       statusCode: HttpStatus.CREATED,
@@ -91,6 +131,30 @@ export class ExperiencesController {
     summary: 'Update an experience',
     description: 'Modify an existing experience entry using its unique ID.',
   })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        images: {
+          type: 'array',
+          items: { type: 'string', format: 'binary' },
+        },
+        company: { type: 'string' },
+        role: { type: 'string' },
+        duration: { type: 'string' },
+        location: { type: 'string' },
+        logo: { type: 'string' },
+        description: { type: 'string' },
+        teamSize: { type: 'string' },
+        companyDescription: { type: 'string' },
+        companyWebsite: { type: 'string' },
+        responsibilities: { type: 'array', items: { type: 'string' } },
+        technologies: { type: 'array', items: { type: 'string' } },
+        achievements: { type: 'array', items: { type: 'string' } },
+      },
+    },
+  })
   @ApiParam({
     name: 'id',
     description: 'Unique Experience ID',
@@ -101,14 +165,17 @@ export class ExperiencesController {
     description: 'The experience record has been updated.',
   })
   @ApiResponse({ status: 404, description: 'Experience not found.' })
+  @UseInterceptors(FilesInterceptor('images'))
   async update(
     @Param('id') id: string,
     @Body() updateExperienceDto: UpdateExperienceDto,
+    @UploadedFiles() images: Express.Multer.File[],
     @Res() res: Response,
   ) {
     const result = await this.experiencesService.update(
       id,
       updateExperienceDto,
+      images,
     );
     return successHandler({
       res,

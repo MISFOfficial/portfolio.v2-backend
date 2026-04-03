@@ -43,6 +43,9 @@ export class Experience {
 
   @Prop({ required: true })
   companyWebsite: string;
+
+  @Prop({ type: [String] })
+  images?: string[];
 }
 
 export const ExperienceSchema = SchemaFactory.createForClass(Experience);
