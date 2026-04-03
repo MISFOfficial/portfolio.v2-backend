@@ -24,8 +24,8 @@ export class Project {
   @Prop({ type: Object, default: null })
   badge?: { text: string; color: string } | null;
 
-  @Prop()
-  overlayText?: string;
+  @Prop({ required: true })
+  overlayText: string;
 
   @Prop({ required: true })
   description: string;
@@ -36,50 +36,56 @@ export class Project {
   @Prop({ type: [String], required: true })
   technologies: string[];
 
-  @Prop({ type: String, default: null })
-  liveUrl?: string | null;
+  @Prop({ required: true })
+  liveUrl: string;
 
-  @Prop({ type: String, default: null })
-  githubUrl?: string | null;
+  @Prop({ required: true })
+  githubUrl: string;
 
-  @Prop({ type: String, default: null })
-  fgithubUrl?: string | null;
+  @Prop({ required: true })
+  fgithubUrl: string;
 
-  @Prop({ type: String, default: null })
-  bgithubUrl?: string | null;
+  @Prop({ required: true })
+  bgithubUrl: string;
 
   @Prop({ type: [String], required: true })
   features: string[];
 
-  @Prop()
-  role?: string;
+  @Prop({ required: true })
+  role: string;
 
-  @Prop({ type: Object })
-  architecture?: {
+  @Prop({ type: Object, required: true })
+  architecture: {
     frontend: string;
     backend: string;
     database: string;
     infrastructure: string[];
   };
 
-  @Prop({ type: Object })
-  problemSolution?: {
+  @Prop({ type: Object, required: true })
+  problemSolution: {
     problem: string;
     solution: string;
   };
 
-  @Prop({ type: [{ label: String, value: String, description: String }] })
-  metrics?: {
+  @Prop({
+    type: [{ label: String, value: String, description: String }],
+    required: true,
+  })
+  metrics: {
     label: string;
     value: string;
     description: string;
   }[];
 
-  @Prop({ type: [String] })
-  lessons?: string[];
+  @Prop({ type: [String], required: true })
+  lessons: string[];
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Image' }] })
-  images?: (Image | string)[];
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Image' }],
+    required: true,
+  })
+  images: (Image | string)[];
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

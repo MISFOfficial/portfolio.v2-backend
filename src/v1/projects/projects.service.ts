@@ -26,6 +26,11 @@ export class ProjectsService {
     if (!image) {
       throw new BadRequestException('Project cover image is required');
     }
+    if (!images || images.length === 0) {
+      throw new BadRequestException(
+        'At least one additional project image is required',
+      );
+    }
     const projectData: any = { ...createProjectDto };
 
     if (image) {
