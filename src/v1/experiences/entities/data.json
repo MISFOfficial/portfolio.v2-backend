@@ -1,0 +1,37 @@
+[
+  {
+    "id": "1",
+    "company": "Aviro Soft",
+    "role": "Jr. Software Engineer",
+    "duration": "12-01-2025 - Present",
+    "location": "On-site",
+    "logo": "https://i.ibb.co.com/p6ZkhwLJ/image.png",
+    "description": "Working as a Jr Software Engineer at Aviro Soft, contributing to full-stack web development projects. Involved in building scalable applications, collaborating with cross-functional teams, and implementing modern development practices to deliver high-quality software solutions.",
+    "responsibilities": [
+      "Developing and maintaining full-stack web applications using modern frameworks",
+      "Collaborating with designers and senior engineers to implement UI/UX designs",
+      "Writing clean, maintainable, and well-documented code following best practices",
+      "Participating in code reviews and contributing to team knowledge sharing",
+      "Debugging and resolving complex technical issues across the stack",
+      "Working with REST APIs and database design for application features"
+    ],
+    "technologies": [
+      "React",
+      "Next.js",
+      "TypeScript",
+      "Node.js",
+      "MongoDB",
+      "Tailwind CSS",
+      "Git",
+      "REST APIs"
+    ],
+    "achievements": [
+      "Successfully delivered multiple client projects on schedule",
+      "Improved application performance through code optimization",
+      "Adopted modern development workflows and CI/CD practices"
+    ],
+    "teamSize": "10+",
+    "companyDescription": "Aviro Soft is a software development company specializing in building innovative digital solutions for businesses. They focus on delivering high-quality web and mobile applications.",
+    "companyWebsite": "https://avirosoft.com"
+  }
+]
