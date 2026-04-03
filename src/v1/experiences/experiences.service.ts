@@ -22,7 +22,7 @@ export class ExperiencesService {
 
     if (images && images.length > 0) {
       const uploadedImages = await this.imageService.createMultiple(images);
-      experienceData.images = uploadedImages.map((img) => img.url);
+      experienceData.images = uploadedImages.map((img) => img._id);
     }
 
     const createdExperience = new this.experienceModel(experienceData);
@@ -30,11 +30,14 @@ export class ExperiencesService {
   }
 
   async findAll(): Promise<Experience[]> {
-    return this.experienceModel.find().exec();
+    return this.experienceModel.find().populate('images').exec();
   }
 
   async findOne(id: string): Promise<Experience> {
-    const experience = await this.experienceModel.findOne({ id }).exec();
+    const experience = await this.experienceModel
+      .findOne({ id })
+      .populate('images')
+      .exec();
     if (!experience) {
       throw new NotFoundException(`Experience with ID ${id} not found`);
     }
@@ -50,18 +53,21 @@ export class ExperiencesService {
 
     if (images && images.length > 0) {
       const uploadedImages = await this.imageService.createMultiple(images);
-      const newImageUrls = uploadedImages.map((img) => img.url);
+      const newImageIds = uploadedImages.map((img) => img._id);
 
       // Merge with existing images or replace? Usually merge for portfolio
       const existingExperience = await this.findOne(id);
       experienceData.images = [
-        ...(existingExperience.images || []),
-        ...newImageUrls,
+        ...(existingExperience.images || []).map((img: any) =>
+          img._id ? img._id : img,
+        ),
+        ...newImageIds,
       ];
     }
 
     const updatedExperience = await this.experienceModel
       .findOneAndUpdate({ id }, experienceData, { new: true })
+      .populate('images')
       .exec();
     if (!updatedExperience) {
       throw new NotFoundException(`Experience with ID ${id} not found`);

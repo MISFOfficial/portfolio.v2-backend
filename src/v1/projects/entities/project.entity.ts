@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Image } from 'src/image/entities/image.entity';
 
 export type ProjectDocument = Project & Document;
 
@@ -80,8 +81,8 @@ export class Project {
   @Prop({ type: [String] })
   lessons?: string[];
 
-  @Prop({ type: [String] })
-  images?: string[];
+  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Image' }] })
+  images?: (Image | string)[];
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

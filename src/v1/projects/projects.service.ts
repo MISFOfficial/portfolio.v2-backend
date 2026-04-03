@@ -22,7 +22,7 @@ export class ProjectsService {
 
     if (images && images.length > 0) {
       const uploadedImages = await this.imageService.createMultiple(images);
-      projectData.images = uploadedImages.map((img) => img.url);
+      projectData.images = uploadedImages.map((img) => img._id);
     }
 
     const createdProject = new this.projectModel(projectData);
@@ -30,11 +30,14 @@ export class ProjectsService {
   }
 
   async findAll(): Promise<Project[]> {
-    return this.projectModel.find().exec();
+    return this.projectModel.find().populate('images').exec();
   }
 
   async findOne(id: string): Promise<Project> {
-    const project = await this.projectModel.findOne({ id }).exec();
+    const project = await this.projectModel
+      .findOne({ id })
+      .populate('images')
+      .exec();
     if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
@@ -50,14 +53,20 @@ export class ProjectsService {
 
     if (images && images.length > 0) {
       const uploadedImages = await this.imageService.createMultiple(images);
-      const newImageUrls = uploadedImages.map((img) => img.url);
+      const newImageIds = uploadedImages.map((img) => img._id);
 
       const existingProject = await this.findOne(id);
-      projectData.images = [...(existingProject.images || []), ...newImageUrls];
+      projectData.images = [
+        ...(existingProject.images || []).map((img: any) =>
+          img._id ? img._id : img,
+        ),
+        ...newImageIds,
+      ];
     }
 
     const updatedProject = await this.projectModel
       .findOneAndUpdate({ id }, projectData, { new: true })
+      .populate('images')
       .exec();
     if (!updatedProject) {
       throw new NotFoundException(`Project with ID ${id} not found`);
