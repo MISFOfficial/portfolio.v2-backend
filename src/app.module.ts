@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import { ProjectsModule } from './v1/projects/projects.module';
 import { ExperiencesModule } from './v1/experiences/experiences.module';
 import { CertificatesModule } from './v1/certificates/certificates.module';
+import { CmsProjectsModule } from './v1/cms-projects/cms-projects.module';
 import { ImageModule } from './image/image.module';
 
 import { envConfig } from './config/env';
@@ -20,6 +21,7 @@ import { envConfig } from './config/env';
     ProjectsModule,
     ExperiencesModule,
     CertificatesModule,
+    CmsProjectsModule,
     ImageModule,
   ],
   controllers: [AppController],
