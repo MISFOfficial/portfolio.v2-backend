@@ -55,6 +55,12 @@ export class Experience {
     required: true,
   })
   image: Image | string;
+
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Image' }],
+    required: false, // Legacy field
+  })
+  images?: (Image | string)[];
 }
 
 export const ExperienceSchema = SchemaFactory.createForClass(Experience);
