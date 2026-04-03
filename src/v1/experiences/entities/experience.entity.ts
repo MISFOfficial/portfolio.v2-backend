@@ -50,10 +50,11 @@ export class Experience {
   companyWebsite: string;
 
   @Prop({
-    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Image' }],
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Image',
     required: true,
   })
-  images: (Image | string)[];
+  image: Image | string;
 }
 
 export const ExperienceSchema = SchemaFactory.createForClass(Experience);

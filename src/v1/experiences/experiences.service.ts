@@ -20,32 +20,30 @@ export class ExperiencesService {
 
   async create(
     createExperienceDto: CreateExperienceDto,
-    images?: Express.Multer.File[],
+    image?: Express.Multer.File, // Single image upload
   ): Promise<Experience> {
     const experienceData: any = { ...createExperienceDto };
 
-    if (!images || images.length === 0) {
-      throw new BadRequestException(
-        'At least one experience image is required',
-      );
+    if (!image) {
+      throw new BadRequestException('Experience image is required');
     }
 
-    const uploadedImages = await this.imageService.createMultiple(images);
-    experienceData.images = uploadedImages.map((img) => img._id);
+    const uploadedImage = await this.imageService.create(image);
+    experienceData.image = uploadedImage._id;
 
     const createdExperience = new this.experienceModel(experienceData);
     const savedExperience = await createdExperience.save();
-    return savedExperience.populate(['images']);
+    return savedExperience.populate(['image']);
   }
 
   async findAll(): Promise<Experience[]> {
-    return this.experienceModel.find().populate(['images']).exec();
+    return this.experienceModel.find().populate(['image']).exec();
   }
 
   async findOne(id: string): Promise<Experience> {
     const experience = await this.experienceModel
       .findById(id)
-      .populate(['images'])
+      .populate(['image'])
       .exec();
     if (!experience) {
       throw new NotFoundException(`Experience with ID ${id} not found`);
@@ -56,31 +54,30 @@ export class ExperiencesService {
   async update(
     id: string,
     updateExperienceDto: UpdateExperienceDto,
-    images?: Express.Multer.File[],
+    image?: Express.Multer.File,
   ): Promise<Experience> {
     const experienceData: any = { ...updateExperienceDto };
+    const existingExperience = await this.findOne(id);
 
-    if (images && images.length > 0) {
-      const uploadedImages = await this.imageService.createMultiple(images);
-      const newImageIds = uploadedImages.map((img) => img._id);
+    if (image) {
+      // 1. Delete old image if it exists
+      if (existingExperience.image) {
+        const oldImageId = (existingExperience.image as any)._id
+          ? (existingExperience.image as any)._id
+          : existingExperience.image;
+        await this.imageService.remove(oldImageId.toString());
+      }
 
-      const existingExperience = await this.findOne(id);
-      experienceData.images = [
-        ...(existingExperience.images || []).map((img: any) =>
-          img._id ? img._id : img,
-        ),
-        ...newImageIds,
-      ];
-    } else {
-      throw new BadRequestException(
-        'At least one experience image is required',
-      );
+      // 2. Upload new image
+      const uploadedImage = await this.imageService.create(image);
+      experienceData.image = uploadedImage._id;
     }
 
     const updatedExperience = await this.experienceModel
       .findByIdAndUpdate(id, experienceData, { new: true })
-      .populate(['images'])
+      .populate(['image'])
       .exec();
+
     if (!updatedExperience) {
       throw new NotFoundException(`Experience with ID ${id} not found`);
     }
@@ -88,6 +85,17 @@ export class ExperiencesService {
   }
 
   async remove(id: string): Promise<any> {
+    const experience = await this.findOne(id);
+
+    // 1. Delete associated image
+    if (experience.image) {
+      const imageId = (experience.image as any)._id
+        ? (experience.image as any)._id
+        : experience.image;
+      await this.imageService.remove(imageId.toString());
+    }
+
+    // 2. Delete experience record
     const result = await this.experienceModel.findByIdAndDelete(id).exec();
     if (!result) {
       throw new NotFoundException(`Experience with ID ${id} not found`);

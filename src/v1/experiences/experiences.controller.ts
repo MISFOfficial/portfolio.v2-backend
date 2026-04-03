@@ -9,10 +9,10 @@ import {
   HttpStatus,
   Res,
   UseInterceptors,
-  UploadedFiles,
+  UploadedFile,
   Req,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiOperation,
   ApiResponse,
@@ -45,9 +45,9 @@ export class ExperiencesController {
     schema: {
       type: 'object',
       properties: {
-        images: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
+        image: {
+          type: 'string',
+          format: 'binary',
         },
         company: { type: 'string' },
         role: {
@@ -65,7 +65,7 @@ export class ExperiencesController {
         achievements: { type: 'array', items: { type: 'string' } },
       },
       required: [
-        'images',
+        'image',
         'company',
         'role',
         'duration',
@@ -85,15 +85,16 @@ export class ExperiencesController {
     description: 'The experience has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FileInterceptor('image'))
   async create(
     @Body() createExperienceDto: CreateExperienceDto,
-    @UploadedFiles() images: Express.Multer.File[],
+    @UploadedFile() image: Express.Multer.File,
     @Res() res: Response,
   ) {
+    console.log(createExperienceDto);
     const result = await this.experiencesService.create(
       createExperienceDto,
-      images,
+      image,
     );
 
     return successHandler({
@@ -154,9 +155,9 @@ export class ExperiencesController {
     schema: {
       type: 'object',
       properties: {
-        images: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
+        image: {
+          type: 'string',
+          format: 'binary',
         },
         company: { type: 'string' },
         role: {
@@ -185,17 +186,17 @@ export class ExperiencesController {
     description: 'The experience record has been updated.',
   })
   @ApiResponse({ status: 404, description: 'Experience not found.' })
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FileInterceptor('image'))
   async update(
     @Param('id') id: string,
     @Body() updateExperienceDto: UpdateExperienceDto,
-    @UploadedFiles() images: Express.Multer.File[],
+    @UploadedFile() image: Express.Multer.File,
     @Res() res: Response,
   ) {
     const result = await this.experiencesService.update(
       id,
       updateExperienceDto,
-      images,
+      image,
     );
     return successHandler({
       res,
