@@ -6,6 +6,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 import { envConfig } from './config/env';
+// import * as dns from 'dns';
+// dns.setServers(['1.1.1.1']);
 
 async function main() {
   const port = envConfig.PORT;

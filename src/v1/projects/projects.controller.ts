@@ -11,7 +11,10 @@ import {
   UseInterceptors,
   UploadedFiles,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import {
+  FilesInterceptor,
+  FileFieldsInterceptor,
+} from '@nestjs/platform-express';
 import {
   ApiOperation,
   ApiResponse,
@@ -43,14 +46,16 @@ export class ProjectsController {
     schema: {
       type: 'object',
       properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
         images: {
           type: 'array',
           items: { type: 'string', format: 'binary' },
         },
-        id: { type: 'string' },
         title: { type: 'string' },
         slug: { type: 'string' },
-        image: { type: 'string' }, // Cover image URL or field
         year: { type: 'string' },
         description: { type: 'string' },
         fullDescription: { type: 'string' },
@@ -71,13 +76,23 @@ export class ProjectsController {
     description: 'The project has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'images', maxCount: 10 },
+    ]),
+  )
   async create(
     @Body() createProjectDto: CreateProjectDto,
-    @UploadedFiles() images: Express.Multer.File[],
+    @UploadedFiles()
+    files: { image?: Express.Multer.File[]; images?: Express.Multer.File[] },
     @Res() res: Response,
   ) {
-    const result = await this.projectsService.create(createProjectDto, images);
+    const result = await this.projectsService.create(
+      createProjectDto,
+      files?.image?.[0],
+      files?.images,
+    );
     return successHandler({
       res,
       statusCode: HttpStatus.CREATED,
@@ -105,13 +120,12 @@ export class ProjectsController {
   @Get('one/:id')
   @ApiOperation({
     summary: 'Get a project by id',
-    description:
-      'Retrieve details of a specific project by its unique custom ID (NOT Mongo _id).',
+    description: 'Retrieve details of a specific project by its MongoDB _id.',
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique Project ID',
-    example: 'proj-001',
+    description: 'MongoDB Project _id',
+    example: '60d5f9f9e6bcfb0015f8a0a8',
   })
   @ApiResponse({ status: 200, description: 'Found record details.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })
@@ -128,20 +142,23 @@ export class ProjectsController {
   @Patch('update/:id')
   @ApiOperation({
     summary: 'Update a project',
-    description: 'Modify an existing project entry using its custom ID.',
+    description: 'Modify an existing project entry using its MongoDB _id.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
+        image: {
+          type: 'string',
+          format: 'binary',
+        },
         images: {
           type: 'array',
           items: { type: 'string', format: 'binary' },
         },
         title: { type: 'string' },
         slug: { type: 'string' },
-        image: { type: 'string' },
         year: { type: 'string' },
         description: { type: 'string' },
         fullDescription: { type: 'string' },
@@ -159,25 +176,32 @@ export class ProjectsController {
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique Project ID',
-    example: 'proj-001',
+    description: 'MongoDB Project _id',
+    example: '60d5f9f9e6bcfb0015f8a0a8',
   })
   @ApiResponse({
     status: 200,
     description: 'The project record has been updated.',
   })
   @ApiResponse({ status: 404, description: 'Project not found.' })
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'images', maxCount: 10 },
+    ]),
+  )
   async update(
     @Param('id') id: string,
     @Body() updateProjectDto: UpdateProjectDto,
-    @UploadedFiles() images: Express.Multer.File[],
+    @UploadedFiles()
+    files: { image?: Express.Multer.File[]; images?: Express.Multer.File[] },
     @Res() res: Response,
   ) {
     const result = await this.projectsService.update(
       id,
       updateProjectDto,
-      images,
+      files?.image?.[0],
+      files?.images,
     );
     return successHandler({
       res,
@@ -190,12 +214,12 @@ export class ProjectsController {
   @Delete('delete/:id')
   @ApiOperation({
     summary: 'Delete a project',
-    description: 'Permanently remove a project entry using its custom ID.',
+    description: 'Permanently remove a project entry using its MongoDB _id.',
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique Project ID',
-    example: 'proj-001',
+    description: 'MongoDB Project _id',
+    example: '60d5f9f9e6bcfb0015f8a0a8',
   })
   @ApiResponse({ status: 200, description: 'Record has been removed.' })
   @ApiResponse({ status: 404, description: 'Project not found.' })

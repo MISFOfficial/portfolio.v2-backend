@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -16,9 +20,18 @@ export class ProjectsService {
 
   async create(
     createProjectDto: CreateProjectDto,
+    image?: Express.Multer.File,
     images?: Express.Multer.File[],
   ): Promise<Project> {
+    if (!image) {
+      throw new BadRequestException('Project cover image is required');
+    }
     const projectData: any = { ...createProjectDto };
+
+    if (image) {
+      const uploadedImage = await this.imageService.create(image);
+      projectData.image = uploadedImage._id;
+    }
 
     if (images && images.length > 0) {
       const uploadedImages = await this.imageService.createMultiple(images);
@@ -26,17 +39,18 @@ export class ProjectsService {
     }
 
     const createdProject = new this.projectModel(projectData);
-    return createdProject.save();
+    const savedProject = await createdProject.save();
+    return savedProject.populate(['image', 'images']);
   }
 
   async findAll(): Promise<Project[]> {
-    return this.projectModel.find().populate('images').exec();
+    return this.projectModel.find().populate(['image', 'images']).exec();
   }
 
   async findOne(id: string): Promise<Project> {
     const project = await this.projectModel
-      .findOne({ id })
-      .populate('images')
+      .findById(id)
+      .populate(['image', 'images'])
       .exec();
     if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found`);
@@ -47,9 +61,15 @@ export class ProjectsService {
   async update(
     id: string,
     updateProjectDto: UpdateProjectDto,
+    image?: Express.Multer.File,
     images?: Express.Multer.File[],
   ): Promise<Project> {
     const projectData: any = { ...updateProjectDto };
+
+    if (image) {
+      const uploadedImage = await this.imageService.create(image);
+      projectData.image = uploadedImage._id;
+    }
 
     if (images && images.length > 0) {
       const uploadedImages = await this.imageService.createMultiple(images);
@@ -65,8 +85,8 @@ export class ProjectsService {
     }
 
     const updatedProject = await this.projectModel
-      .findOneAndUpdate({ id }, projectData, { new: true })
-      .populate('images')
+      .findByIdAndUpdate(id, projectData, { new: true })
+      .populate(['image', 'images'])
       .exec();
     if (!updatedProject) {
       throw new NotFoundException(`Project with ID ${id} not found`);
@@ -75,8 +95,8 @@ export class ProjectsService {
   }
 
   async remove(id: string): Promise<any> {
-    const result = await this.projectModel.deleteOne({ id }).exec();
-    if (result.deletedCount === 0) {
+    const result = await this.projectModel.findByIdAndDelete(id).exec();
+    if (!result) {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
     return { deleted: true };

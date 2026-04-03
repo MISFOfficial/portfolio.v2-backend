@@ -7,16 +7,13 @@ export type ProjectDocument = Project & Document;
 @Schema({ timestamps: true })
 export class Project {
   @Prop({ required: true })
-  id: string;
-
-  @Prop({ required: true })
   title: string;
 
   @Prop({ required: true })
   slug: string;
 
-  @Prop({ required: true })
-  image: string;
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Image', required: true })
+  image: Image | string;
 
   @Prop({ type: [String], required: true })
   tags: string[];

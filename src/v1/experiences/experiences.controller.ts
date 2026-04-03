@@ -10,6 +10,7 @@ import {
   Res,
   UseInterceptors,
   UploadedFiles,
+  Req,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import {
@@ -25,6 +26,7 @@ import type { Response } from 'express';
 import { ExperiencesService } from './experiences.service';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
+import { ExperienceRole } from './entities/experience.entity';
 import { successHandler } from 'src/utils/successHandler';
 
 @Controller('experiences')
@@ -47,12 +49,13 @@ export class ExperiencesController {
           type: 'array',
           items: { type: 'string', format: 'binary' },
         },
-        id: { type: 'string' },
         company: { type: 'string' },
-        role: { type: 'string' },
+        role: {
+          type: 'string',
+          enum: Object.values(ExperienceRole),
+        },
         duration: { type: 'string' },
         location: { type: 'string' },
-        logo: { type: 'string' },
         description: { type: 'string' },
         teamSize: { type: 'string' },
         companyDescription: { type: 'string' },
@@ -61,6 +64,20 @@ export class ExperiencesController {
         technologies: { type: 'array', items: { type: 'string' } },
         achievements: { type: 'array', items: { type: 'string' } },
       },
+      required: [
+        'images',
+        'company',
+        'role',
+        'duration',
+        'location',
+        'description',
+        'teamSize',
+        'companyDescription',
+        'companyWebsite',
+        'responsibilities',
+        'technologies',
+        'achievements',
+      ],
     },
   })
   @ApiResponse({
@@ -78,6 +95,7 @@ export class ExperiencesController {
       createExperienceDto,
       images,
     );
+
     return successHandler({
       res,
       statusCode: HttpStatus.CREATED,
@@ -107,12 +125,12 @@ export class ExperiencesController {
   @ApiOperation({
     summary: 'Get an experience by id',
     description:
-      'Retrieve details of a specific experience by its unique ID (NOT Mongo _id).',
+      'Retrieve details of a specific experience by its MongoDB _id.',
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique Experience ID',
-    example: 'exp-001',
+    description: 'MongoDB Experience _id',
+    example: '60d5f9f9e6bcfb0015f8a0a8',
   })
   @ApiResponse({ status: 200, description: 'Found record details.' })
   @ApiResponse({ status: 404, description: 'Experience not found.' })
@@ -129,7 +147,7 @@ export class ExperiencesController {
   @Patch('update/:id')
   @ApiOperation({
     summary: 'Update an experience',
-    description: 'Modify an existing experience entry using its unique ID.',
+    description: 'Modify an existing experience entry using its MongoDB _id.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -141,10 +159,12 @@ export class ExperiencesController {
           items: { type: 'string', format: 'binary' },
         },
         company: { type: 'string' },
-        role: { type: 'string' },
+        role: {
+          type: 'string',
+          enum: Object.values(ExperienceRole),
+        },
         duration: { type: 'string' },
         location: { type: 'string' },
-        logo: { type: 'string' },
         description: { type: 'string' },
         teamSize: { type: 'string' },
         companyDescription: { type: 'string' },
@@ -157,8 +177,8 @@ export class ExperiencesController {
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique Experience ID',
-    example: 'exp-001',
+    description: 'MongoDB Experience _id',
+    example: '60d5f9f9e6bcfb0015f8a0a8',
   })
   @ApiResponse({
     status: 200,
@@ -192,8 +212,8 @@ export class ExperiencesController {
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique Experience ID',
-    example: 'exp-001',
+    description: 'MongoDB Experience _id',
+    example: '60d5f9f9e6bcfb0015f8a0a8',
   })
   @ApiResponse({ status: 200, description: 'Record has been removed.' })
   @ApiResponse({ status: 404, description: 'Experience not found.' })

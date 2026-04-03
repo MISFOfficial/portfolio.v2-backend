@@ -4,25 +4,29 @@ import { Image } from 'src/image/entities/image.entity';
 
 export type ExperienceDocument = Experience & Document;
 
+export enum ExperienceRole {
+  FRONTEND_ENGINEER = 'FRONTEND_ENGINEER',
+  FRONTEND_DEVELOPER = 'FRONTEND_DEVELOPER',
+  BACKEND_ENGINEER = 'BACKEND_ENGINEER',
+  BACKEND_DEVELOPER = 'BACKEND_DEVELOPER',
+  SOFTWARE_ENGINEER = 'SOFTWARE_ENGINEER',
+  JR_SOFTWARE_ENGINEER = 'JR_SOFTWARE_ENGINEER',
+  SENIOR_SOFTWARE_ENGINEER = 'SENIOR_SOFTWARE_ENGINEER',
+}
+
 @Schema({ timestamps: true })
 export class Experience {
-  @Prop({ required: true, unique: true })
-  id: string;
-
   @Prop({ required: true })
   company: string;
 
-  @Prop({ required: true })
-  role: string;
+  @Prop({ required: true, enum: ExperienceRole })
+  role: ExperienceRole;
 
   @Prop({ required: true })
   duration: string;
 
   @Prop({ required: true })
   location: string;
-
-  @Prop({ required: true })
-  logo: string;
 
   @Prop({ required: true })
   description: string;
@@ -45,8 +49,11 @@ export class Experience {
   @Prop({ required: true })
   companyWebsite: string;
 
-  @Prop({ type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Image' }] })
-  images?: (Image | string)[];
+  @Prop({
+    type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Image' }],
+    required: true,
+  })
+  images: (Image | string)[];
 }
 
 export const ExperienceSchema = SchemaFactory.createForClass(Experience);
