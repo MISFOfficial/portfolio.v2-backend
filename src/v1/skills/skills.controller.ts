@@ -8,13 +8,17 @@ import {
   Delete,
   HttpStatus,
   Res,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiOperation,
   ApiResponse,
   ApiTags,
   ApiParam,
   ApiBody,
+  ApiConsumes,
 } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { SkillsService } from './skills.service';
@@ -33,10 +37,34 @@ export class SkillsController {
     summary: 'Create a new skill',
     description: 'Add a new professional skill to the portfolio.',
   })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        logo: {
+          type: 'string',
+          format: 'binary',
+          description: 'Skill logo image file',
+        },
+        name: { type: 'string', description: 'Name of the skill' },
+        category: {
+          type: 'string',
+          enum: Object.values(SkillCategory),
+          description: 'Category of the skill',
+        },
+      },
+    },
+  })
   @ApiResponse({ status: 201, description: 'Skill created successfully' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  async create(@Body() createSkillDto: CreateSkillDto, @Res() res: Response) {
-    const result = await this.skillsService.create(createSkillDto);
+  @UseInterceptors(FileInterceptor('logo'))
+  async create(
+    @Body() createSkillDto: CreateSkillDto,
+    @UploadedFile() logo: Express.Multer.File,
+    @Res() res: Response,
+  ) {
+    const result = await this.skillsService.create(createSkillDto, logo);
     return successHandler({
       res,
       statusCode: HttpStatus.CREATED,
@@ -108,15 +136,36 @@ export class SkillsController {
     summary: 'Update a skill',
     description: 'Modify an existing skill using its MongoDB _id.',
   })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        logo: {
+          type: 'string',
+          format: 'binary',
+          description: 'Optional new skill logo image file',
+        },
+        name: { type: 'string', description: 'Name of the skill' },
+        category: {
+          type: 'string',
+          enum: Object.values(SkillCategory),
+          description: 'Category of the skill',
+        },
+      },
+    },
+  })
   @ApiParam({ name: 'id', description: 'MongoDB Skill _id' })
   @ApiResponse({ status: 200, description: 'Skill updated successfully' })
   @ApiResponse({ status: 404, description: 'Skill not found.' })
+  @UseInterceptors(FileInterceptor('logo'))
   async update(
     @Param('id') id: string,
     @Body() updateSkillDto: UpdateSkillDto,
+    @UploadedFile() logo: Express.Multer.File,
     @Res() res: Response,
   ) {
-    const result = await this.skillsService.update(id, updateSkillDto);
+    const result = await this.skillsService.update(id, updateSkillDto, logo);
     return successHandler({
       res,
       statusCode: HttpStatus.OK,
