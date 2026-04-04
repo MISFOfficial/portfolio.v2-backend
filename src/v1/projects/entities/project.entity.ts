@@ -36,11 +36,11 @@ export class Project {
   @Prop({ required: true })
   liveUrl: string;
 
-  @Prop({ required: false, default: null })
+  @Prop({ type: String, required: false, default: null })
   githubUrl?: string | null;
-  @Prop({ required: false, default: null })
+  @Prop({ type: String, required: false, default: null })
   fgithubUrl?: string | null;
-  @Prop({ required: false, default: null })
+  @Prop({ type: String, required: false, default: null })
   bgithubUrl?: string | null;
 
   @Prop({ type: [String], required: true })
