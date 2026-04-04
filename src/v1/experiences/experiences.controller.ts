@@ -9,9 +9,10 @@ import {
   HttpStatus,
   Res,
   UseInterceptors,
-  UploadedFiles,
+  UploadedFile,
+  Req,
 } from '@nestjs/common';
-import { FilesInterceptor } from '@nestjs/platform-express';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiOperation,
   ApiResponse,
@@ -25,6 +26,7 @@ import type { Response } from 'express';
 import { ExperiencesService } from './experiences.service';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
+import { ExperienceRole } from './entities/experience.entity';
 import { successHandler } from 'src/utils/successHandler';
 
 @Controller('experiences')
@@ -43,16 +45,17 @@ export class ExperiencesController {
     schema: {
       type: 'object',
       properties: {
-        images: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
+        image: {
+          type: 'string',
+          format: 'binary',
         },
-        id: { type: 'string' },
         company: { type: 'string' },
-        role: { type: 'string' },
+        role: {
+          type: 'string',
+          enum: Object.values(ExperienceRole),
+        },
         duration: { type: 'string' },
         location: { type: 'string' },
-        logo: { type: 'string' },
         description: { type: 'string' },
         teamSize: { type: 'string' },
         companyDescription: { type: 'string' },
@@ -61,6 +64,20 @@ export class ExperiencesController {
         technologies: { type: 'array', items: { type: 'string' } },
         achievements: { type: 'array', items: { type: 'string' } },
       },
+      required: [
+        'image',
+        'company',
+        'role',
+        'duration',
+        'location',
+        'description',
+        'teamSize',
+        'companyDescription',
+        'companyWebsite',
+        'responsibilities',
+        'technologies',
+        'achievements',
+      ],
     },
   })
   @ApiResponse({
@@ -68,16 +85,18 @@ export class ExperiencesController {
     description: 'The experience has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FileInterceptor('image'))
   async create(
     @Body() createExperienceDto: CreateExperienceDto,
-    @UploadedFiles() images: Express.Multer.File[],
+    @UploadedFile() image: Express.Multer.File,
     @Res() res: Response,
   ) {
+    console.log(createExperienceDto);
     const result = await this.experiencesService.create(
       createExperienceDto,
-      images,
+      image,
     );
+
     return successHandler({
       res,
       statusCode: HttpStatus.CREATED,
@@ -107,12 +126,12 @@ export class ExperiencesController {
   @ApiOperation({
     summary: 'Get an experience by id',
     description:
-      'Retrieve details of a specific experience by its unique ID (NOT Mongo _id).',
+      'Retrieve details of a specific experience by its MongoDB _id.',
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique Experience ID',
-    example: 'exp-001',
+    description: 'MongoDB Experience _id',
+    example: '60d5f9f9e6bcfb0015f8a0a8',
   })
   @ApiResponse({ status: 200, description: 'Found record details.' })
   @ApiResponse({ status: 404, description: 'Experience not found.' })
@@ -129,22 +148,24 @@ export class ExperiencesController {
   @Patch('update/:id')
   @ApiOperation({
     summary: 'Update an experience',
-    description: 'Modify an existing experience entry using its unique ID.',
+    description: 'Modify an existing experience entry using its MongoDB _id.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        images: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
+        image: {
+          type: 'string',
+          format: 'binary',
         },
         company: { type: 'string' },
-        role: { type: 'string' },
+        role: {
+          type: 'string',
+          enum: Object.values(ExperienceRole),
+        },
         duration: { type: 'string' },
         location: { type: 'string' },
-        logo: { type: 'string' },
         description: { type: 'string' },
         teamSize: { type: 'string' },
         companyDescription: { type: 'string' },
@@ -157,25 +178,25 @@ export class ExperiencesController {
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique Experience ID',
-    example: 'exp-001',
+    description: 'MongoDB Experience _id',
+    example: '60d5f9f9e6bcfb0015f8a0a8',
   })
   @ApiResponse({
     status: 200,
     description: 'The experience record has been updated.',
   })
   @ApiResponse({ status: 404, description: 'Experience not found.' })
-  @UseInterceptors(FilesInterceptor('images'))
+  @UseInterceptors(FileInterceptor('image'))
   async update(
     @Param('id') id: string,
     @Body() updateExperienceDto: UpdateExperienceDto,
-    @UploadedFiles() images: Express.Multer.File[],
+    @UploadedFile() image: Express.Multer.File,
     @Res() res: Response,
   ) {
     const result = await this.experiencesService.update(
       id,
       updateExperienceDto,
-      images,
+      image,
     );
     return successHandler({
       res,
@@ -192,8 +213,8 @@ export class ExperiencesController {
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique Experience ID',
-    example: 'exp-001',
+    description: 'MongoDB Experience _id',
+    example: '60d5f9f9e6bcfb0015f8a0a8',
   })
   @ApiResponse({ status: 200, description: 'Record has been removed.' })
   @ApiResponse({ status: 404, description: 'Experience not found.' })

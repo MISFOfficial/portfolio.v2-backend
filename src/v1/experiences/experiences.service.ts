@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateExperienceDto } from './dto/create-experience.dto';
@@ -16,62 +20,118 @@ export class ExperiencesService {
 
   async create(
     createExperienceDto: CreateExperienceDto,
-    images?: Express.Multer.File[],
+    image?: Express.Multer.File, // Single image upload
   ): Promise<Experience> {
     const experienceData: any = { ...createExperienceDto };
 
-    if (images && images.length > 0) {
-      const uploadedImages = await this.imageService.createMultiple(images);
-      experienceData.images = uploadedImages.map((img) => img.url);
+    if (!image) {
+      throw new BadRequestException('Experience image is required');
     }
 
+    const uploadedImage = await this.imageService.create(image);
+    experienceData.image = uploadedImage._id;
+
     const createdExperience = new this.experienceModel(experienceData);
-    return createdExperience.save();
+    const savedExperience = await createdExperience.save();
+    return savedExperience.populate(['image']);
   }
 
-  async findAll(): Promise<Experience[]> {
-    return this.experienceModel.find().exec();
+  async findAll(): Promise<any[]> {
+    const experiences = await this.experienceModel
+      .find()
+      .populate('image')
+      .populate('images')
+      .exec();
+
+    return experiences.map((exp) => {
+      const obj = exp.toObject();
+      // Fallback: If image is missing but images array has data, use the first one
+      if (!obj.image && obj.images && obj.images.length > 0) {
+        obj.image = obj.images[0];
+      }
+      delete obj.images; // Always remove the legacy plural field from response
+      return obj;
+    });
   }
 
-  async findOne(id: string): Promise<Experience> {
-    const experience = await this.experienceModel.findOne({ id }).exec();
+  async findOne(id: string): Promise<any> {
+    const experience = await this.experienceModel
+      .findById(id)
+      .populate('image')
+      .populate('images')
+      .exec();
+
     if (!experience) {
       throw new NotFoundException(`Experience with ID ${id} not found`);
     }
-    return experience;
+
+    const obj = experience.toObject();
+    // Fallback: If image is missing but images array has data, use the first one
+    if (!obj.image && obj.images && obj.images.length > 0) {
+      obj.image = obj.images[0];
+    }
+    delete obj.images; // Always remove the legacy plural field from response
+    return obj;
   }
 
   async update(
     id: string,
     updateExperienceDto: UpdateExperienceDto,
-    images?: Express.Multer.File[],
-  ): Promise<Experience> {
+    image?: Express.Multer.File,
+  ): Promise<any> {
     const experienceData: any = { ...updateExperienceDto };
+    const existingExperience = await this.experienceModel.findById(id).exec();
 
-    if (images && images.length > 0) {
-      const uploadedImages = await this.imageService.createMultiple(images);
-      const newImageUrls = uploadedImages.map((img) => img.url);
+    if (!existingExperience) {
+      throw new NotFoundException(`Experience with ID ${id} not found`);
+    }
 
-      // Merge with existing images or replace? Usually merge for portfolio
-      const existingExperience = await this.findOne(id);
-      experienceData.images = [
-        ...(existingExperience.images || []),
-        ...newImageUrls,
-      ];
+    if (image) {
+      // 1. Delete old image (from either field)
+      const oldImageId =
+        existingExperience.image ||
+        (existingExperience.images && existingExperience.images.length > 0
+          ? existingExperience.images[0]
+          : null);
+
+      if (oldImageId) {
+        await this.imageService.remove(oldImageId.toString());
+      }
+
+      // 2. Upload new image
+      const uploadedImage = await this.imageService.create(image);
+      experienceData.image = uploadedImage._id;
+      experienceData.images = []; // Clear legacy field on update
     }
 
     const updatedExperience = await this.experienceModel
-      .findOneAndUpdate({ id }, experienceData, { new: true })
+      .findByIdAndUpdate(id, experienceData, { new: true })
+      .populate('image')
       .exec();
+
     if (!updatedExperience) {
       throw new NotFoundException(`Experience with ID ${id} not found`);
     }
-    return updatedExperience;
+
+    const obj = updatedExperience.toObject();
+    delete obj.images;
+    return obj;
   }
 
   async remove(id: string): Promise<any> {
-    const result = await this.experienceModel.deleteOne({ id }).exec();
-    if (result.deletedCount === 0) {
+    const experience = await this.findOne(id);
+
+    // 1. Delete associated image
+    if (experience.image) {
+      const imageId = (experience.image as any)._id
+        ? (experience.image as any)._id
+        : experience.image;
+      await this.imageService.remove(imageId.toString());
+    }
+
+    // 2. Delete experience record
+    const result = await this.experienceModel.findByIdAndDelete(id).exec();
+    if (!result) {
       throw new NotFoundException(`Experience with ID ${id} not found`);
     }
     return { deleted: true };

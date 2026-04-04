@@ -1,216 +1,287 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-    IsArray,
-    IsNotEmpty,
-    IsObject,
-    IsOptional,
-    IsString,
-    ValidateNested,
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 
-class BadgeDto {
-    @ApiProperty({ example: 'New', description: 'The text displayed on the badge' })
-    @IsString()
-    @IsNotEmpty()
-    text: string;
+export class ProjectBadgePropertiesDto {
+  @ApiProperty({
+    example: 'New',
+    description: 'The text displayed on the badge',
+  })
+  @IsString()
+  @IsNotEmpty()
+  text: string;
 
-    @ApiProperty({ example: 'blue', description: 'The color of the badge' })
-    @IsString()
-    @IsNotEmpty()
-    color: string;
+  @ApiProperty({ example: 'blue', description: 'The color of the badge' })
+  @IsString()
+  @IsNotEmpty()
+  color: string;
 }
 
-class ArchitectureDto {
-    @ApiProperty({ example: 'Next.js', description: 'Frontend technology used' })
-    @IsString()
-    @IsNotEmpty()
-    frontend: string;
-
-    @ApiProperty({ example: 'NestJS', description: 'Backend technology used' })
-    @IsString()
-    @IsNotEmpty()
-    backend: string;
-
-    @ApiProperty({ example: 'MongoDB', description: 'Database used' })
-    @IsString()
-    @IsNotEmpty()
-    database: string;
-
-    @ApiProperty({
-        type: [String],
-        example: ['AWS', 'Vercel'],
-        description: 'Infrastructure and hosting services'
-    })
-    @IsArray()
-    @IsString({ each: true })
-    infrastructure: string[];
+export class ProjectBadgeDto {
+  @ApiProperty({ type: ProjectBadgePropertiesDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ProjectBadgePropertiesDto)
+  properties: ProjectBadgePropertiesDto;
 }
 
-class ProblemSolutionDto {
-    @ApiProperty({
-        example: 'Existing solutions were too complex.',
-        description: 'The core problem this project aims to solve'
-    })
-    @IsString()
-    @IsNotEmpty()
-    problem: string;
+export class ProjectArchitectureDto {
+  @ApiProperty({ example: 'Next.js', description: 'Frontend technology used' })
+  @IsString()
+  @IsNotEmpty()
+  frontend: string;
 
-    @ApiProperty({
-        example: 'Developed a lightweight alternative.',
-        description: 'The solution implemented in this project'
-    })
-    @IsString()
-    @IsNotEmpty()
-    solution: string;
+  @ApiProperty({ example: 'NestJS', description: 'Backend technology used' })
+  @IsString()
+  @IsNotEmpty()
+  backend: string;
+
+  @ApiProperty({ example: 'MongoDB', description: 'Database used' })
+  @IsString()
+  @IsNotEmpty()
+  database: string;
+
+  @ApiProperty({
+    type: [String],
+    example: ['AWS', 'Vercel'],
+    description: 'Infrastructure and hosting services',
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @IsString({ each: true })
+  infrastructure: string[];
 }
 
-class MetricDto {
-    @ApiProperty({ example: 'Performance', description: 'Label for the metric' })
-    @IsString()
-    @IsNotEmpty()
-    label: string;
+export class ProjectProblemSolutionDto {
+  @ApiProperty({
+    example: 'Existing solutions were too complex.',
+    description: 'The core problem this project aims to solve',
+  })
+  @IsString()
+  @IsNotEmpty()
+  problem: string;
 
-    @ApiProperty({ example: '99%', description: 'Value of the metric' })
-    @IsString()
-    @IsNotEmpty()
-    value: string;
+  @ApiProperty({
+    example: 'Developed a lightweight alternative.',
+    description: 'The solution implemented in this project',
+  })
+  @IsString()
+  @IsNotEmpty()
+  solution: string;
+}
 
-    @ApiProperty({ example: 'Lighthouse score', description: 'Short description of the metric' })
-    @IsString()
-    @IsNotEmpty()
-    description: string;
+export class ProjectMetricDto {
+  @ApiProperty({ example: 'Performance', description: 'Label for the metric' })
+  @IsString()
+  @IsNotEmpty()
+  label: string;
+
+  @ApiProperty({ example: '99%', description: 'Value of the metric' })
+  @IsString()
+  @IsNotEmpty()
+  value: string;
+
+  @ApiProperty({
+    example: 'Lighthouse score',
+    description: 'Short description of the metric',
+  })
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 }
 
 export class CreateProjectDto {
-    @ApiProperty({ example: 'proj-001', description: 'Unique identifier for the project' })
-    @IsString()
-    @IsNotEmpty()
-    id: string;
+  @ApiProperty({
+    example: 'My Awesome Project',
+    description: 'Title of the project',
+  })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
 
-    @ApiProperty({ example: 'My Awesome Project', description: 'Title of the project' })
-    @IsString()
-    @IsNotEmpty()
-    title: string;
+  @ApiProperty({
+    type: [String],
+    example: ['React', 'NestJS'],
+    description: 'Category tags',
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @IsString({ each: true })
+  tags: string[];
 
-    @ApiProperty({ example: 'my-awesome-project', description: 'Slug for URL generation' })
-    @IsString()
-    @IsNotEmpty()
-    slug: string;
+  @ApiProperty({ example: '2026', description: 'Year of project development' })
+  @IsString()
+  @IsNotEmpty()
+  year: string;
 
-    @ApiProperty({ example: 'https://images.com/proj.jpg', description: 'Cover image URL' })
-    @IsString()
-    @IsNotEmpty()
-    image: string;
+  @ApiPropertyOptional({
+    type: ProjectBadgeDto,
+    nullable: true,
+    description: 'Optional badge information',
+  })
+  @IsOptional()
+  @IsObject()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @ValidateNested()
+  @Type(() => ProjectBadgeDto)
+  badge?: ProjectBadgeDto | null;
 
-    @ApiProperty({ type: [String], example: ['React', 'NestJS'], description: 'Category tags' })
-    @IsArray()
-    @IsString({ each: true })
-    tags: string[];
+  @ApiProperty({
+    example: 'Hover for details',
+    description: 'Text shown on image overlay',
+  })
+  @IsString()
+  @IsNotEmpty()
+  overlayText: string;
 
-    @ApiProperty({ example: '2026', description: 'Year of project development' })
-    @IsString()
-    @IsNotEmpty()
-    year: string;
+  @ApiProperty({
+    example: 'Brief summary',
+    description: 'Short project description',
+  })
+  @IsString()
+  @IsNotEmpty()
+  description: string;
 
-    @ApiPropertyOptional({
-        type: BadgeDto,
-        nullable: true,
-        description: 'Optional badge information'
-    })
-    @IsOptional()
-    @IsObject()
-    @ValidateNested()
-    @Type(() => BadgeDto)
-    badge?: BadgeDto | null;
+  @ApiProperty({
+    example: 'Full detailed breakdown...',
+    description: 'Complete project details',
+  })
+  @IsString()
+  @IsNotEmpty()
+  fullDescription: string;
 
-    @ApiPropertyOptional({ example: 'Hover for details', description: 'Text shown on image overlay' })
-    @IsOptional()
-    @IsString()
-    overlayText?: string;
+  @ApiProperty({
+    type: [String],
+    example: ['TypeScript', 'Mongoose'],
+    description: 'Tools and technologies used',
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @IsString({ each: true })
+  technologies: string[];
 
-    @ApiProperty({ example: 'Brief summary', description: 'Short project description' })
-    @IsString()
-    @IsNotEmpty()
-    description: string;
+  @ApiProperty({
+    example: 'https://live.com',
+    description: 'Live project URL',
+  })
+  @IsString()
+  @IsNotEmpty()
+  liveUrl: string;
 
-    @ApiProperty({ example: 'Full detailed breakdown...', description: 'Complete project details' })
-    @IsString()
-    @IsNotEmpty()
-    fullDescription: string;
+  @ApiPropertyOptional({
+    example: 'https://github.com/repo',
+    description: 'Main GitHub repository',
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString()
+  githubUrl?: string | null;
 
-    @ApiProperty({
-        type: [String],
-        example: ['TypeScript', 'Mongoose'],
-        description: 'Tools and technologies used'
-    })
-    @IsArray()
-    @IsString({ each: true })
-    technologies: string[];
+  @ApiPropertyOptional({
+    example: 'https://github.com/frontend',
+    description: 'Frontend repository',
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString()
+  fgithubUrl?: string | null;
 
-    @ApiPropertyOptional({ example: 'https://live.com', description: 'Live project URL' })
-    @IsOptional()
-    @IsString()
-    liveUrl?: string | null;
+  @ApiPropertyOptional({
+    example: 'https://github.com/backend',
+    description: 'Backend repository',
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString()
+  bgithubUrl?: string | null;
 
-    @ApiPropertyOptional({ example: 'https://github.com/repo', description: 'Main GitHub repository' })
-    @IsOptional()
-    @IsString()
-    githubUrl?: string | null;
+  @ApiProperty({
+    type: [String],
+    example: ['User Auth', 'Real-time updates'],
+    description: 'Key features of the project',
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @IsString({ each: true })
+  features: string[];
 
-    @ApiPropertyOptional({ example: 'https://github.com/frontend', description: 'Frontend repository' })
-    @IsOptional()
-    @IsString()
-    fgithubUrl?: string | null;
+  @ApiProperty({
+    example: 'Full Stack Developer',
+    description: 'Role in the project',
+  })
+  @IsString()
+  @IsNotEmpty()
+  role: string;
 
-    @ApiPropertyOptional({ example: 'https://github.com/backend', description: 'Backend repository' })
-    @IsOptional()
-    @IsString()
-    bgithubUrl?: string | null;
+  @ApiProperty({
+    type: ProjectArchitectureDto,
+    description: 'Technical architecture details',
+  })
+  @IsObject()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @ValidateNested()
+  @Type(() => ProjectArchitectureDto)
+  architecture: ProjectArchitectureDto;
 
-    @ApiProperty({
-        type: [String],
-        example: ['User Auth', 'Real-time updates'],
-        description: 'Key features of the project'
-    })
-    @IsArray()
-    @IsString({ each: true })
-    features: string[];
+  @ApiProperty({
+    type: ProjectProblemSolutionDto,
+    description: 'Problem and Solution statement',
+  })
+  @IsObject()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @ValidateNested()
+  @Type(() => ProjectProblemSolutionDto)
+  problemSolution: ProjectProblemSolutionDto;
 
-    @ApiPropertyOptional({ example: 'Full Stack Developer', description: 'Role in the project' })
-    @IsOptional()
-    @IsString()
-    role?: string;
+  @ApiProperty({
+    type: [ProjectMetricDto],
+    description: 'Project performance or success metrics',
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @ValidateNested({ each: true })
+  @Type(() => ProjectMetricDto)
+  metrics: ProjectMetricDto[];
 
-    @ApiPropertyOptional({ type: ArchitectureDto, description: 'Technical architecture details' })
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => ArchitectureDto)
-    architecture?: ArchitectureDto;
-
-    @ApiPropertyOptional({ type: ProblemSolutionDto, description: 'Problem and Solution statement' })
-    @IsOptional()
-    @ValidateNested()
-    @Type(() => ProblemSolutionDto)
-    problemSolution?: ProblemSolutionDto;
-
-    @ApiPropertyOptional({
-        type: [MetricDto],
-        description: 'Project performance or success metrics'
-    })
-    @IsOptional()
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => MetricDto)
-    metrics?: MetricDto[];
-
-    @ApiPropertyOptional({
-        type: [String],
-        example: ['Mastered CI/CD'],
-        description: 'Key takeaways from the project'
-    })
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    lessons?: string[];
+  @ApiProperty({
+    type: [String],
+    example: ['Mastered CI/CD'],
+    description: 'Key takeaways from the project',
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @IsString({ each: true })
+  lessons: string[];
 }

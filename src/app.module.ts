@@ -6,7 +6,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
 import { ProjectsModule } from './v1/projects/projects.module';
 import { ExperiencesModule } from './v1/experiences/experiences.module';
+import { CertificatesModule } from './v1/certificates/certificates.module';
+import { DesignsModule } from './v1/designs/designs.module';
 import { ImageModule } from './image/image.module';
+import { SkillsModule } from './v1/skills/skills.module';
 
 import { envConfig } from './config/env';
 
@@ -18,7 +21,10 @@ import { envConfig } from './config/env';
     }),
     ProjectsModule,
     ExperiencesModule,
+    CertificatesModule,
+    DesignsModule,
     ImageModule,
+    SkillsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

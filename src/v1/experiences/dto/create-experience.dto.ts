@@ -1,27 +1,47 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUrl,
+  IsEnum,
+  ValidateNested,
+} from 'class-validator';
+import { ExperienceRole } from '../entities/experience.entity';
+import { Transform, Type } from 'class-transformer';
 
-export class CreateExperienceDto {
+export class ExperienceBadgeDto {
   @ApiProperty({
-    example: 'exp-001',
-    description: 'Unique identifier for the experience',
+    example: 'New',
+    description: 'The text displayed on the badge',
   })
   @IsString()
   @IsNotEmpty()
-  id: string;
+  text: string;
 
+  @ApiProperty({ example: 'blue', description: 'The color of the badge' })
+  @IsString()
+  @IsNotEmpty()
+  color: string;
+}
+
+export class CreateExperienceDto {
   @ApiProperty({ example: 'Aviro Soft', description: 'Name of the company' })
   @IsString()
   @IsNotEmpty()
   company: string;
 
   @ApiProperty({
-    example: 'Jr. Software Engineer',
+    enum: ExperienceRole,
+    example: ExperienceRole.SOFTWARE_ENGINEER,
     description: 'Role in the company',
   })
-  @IsString()
+  @IsEnum(ExperienceRole)
   @IsNotEmpty()
-  role: string;
+  role: ExperienceRole;
 
   @ApiProperty({
     example: '12-01-2025 - Present',
@@ -37,14 +57,6 @@ export class CreateExperienceDto {
   location: string;
 
   @ApiProperty({
-    example: 'https://i.ibb.co.com/p6ZkhwLJ/image.png',
-    description: 'Company logo URL',
-  })
-  @IsUrl()
-  @IsNotEmpty()
-  logo: string;
-
-  @ApiProperty({
     example: 'Working as a Jr Software Engineer...',
     description: 'Brief description of the experience',
   })
@@ -58,6 +70,10 @@ export class CreateExperienceDto {
     description: 'List of responsibilities',
   })
   @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
   @IsString({ each: true })
   responsibilities: string[];
 
@@ -67,6 +83,10 @@ export class CreateExperienceDto {
     description: 'Technologies used',
   })
   @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
   @IsString({ each: true })
   technologies: string[];
 
@@ -76,6 +96,10 @@ export class CreateExperienceDto {
     description: 'Key achievements',
   })
   @IsArray()
+  @ArrayNotEmpty()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
   @IsString({ each: true })
   achievements: string[];
 
@@ -99,4 +123,18 @@ export class CreateExperienceDto {
   @IsUrl()
   @IsNotEmpty()
   companyWebsite: string;
+
+  @ApiPropertyOptional({
+    type: ExperienceBadgeDto,
+    nullable: true,
+    description: 'Optional badge information',
+  })
+  @IsOptional()
+  @IsObject()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @ValidateNested()
+  @Type(() => ExperienceBadgeDto)
+  badge?: ExperienceBadgeDto | null;
 }

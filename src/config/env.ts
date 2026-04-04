@@ -19,19 +19,13 @@ interface Env {
 }
 
 export const envConfig: Env = {
-  DB_URI: process.env.DB_URI || 'mongodb://localhost:27017/portfolio',
+  DB_URI: process.env.MONGODB_URL || 'mongodb://localhost:27017/portfolio',
   ENV_MODE: process.env.ENV_MODE || 'development',
   PORT: Number(process.env.PORT) || 5000,
   ALLOWED_ORIGINS:
     (process.env.ENV_MODE || 'development') === 'production'
-      ? [
-          'https://jahin.dev', // Placeholder for production URL
-        ]
-      : [
-          'http://localhost:3000',
-          'http://localhost:3001',
-          'http://localhost:5173',
-        ],
+      ? ['https://muksitul.pages.dev']
+      : ['http://localhost:3000'],
   BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:5000',
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
   R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
