@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
-export class ProjectBadgeDto {
+export class ProjectBadgePropertiesDto {
   @ApiProperty({
     example: 'New',
     description: 'The text displayed on the badge',
@@ -23,6 +23,14 @@ export class ProjectBadgeDto {
   @IsString()
   @IsNotEmpty()
   color: string;
+}
+
+export class ProjectBadgeDto {
+  @ApiProperty({ type: ProjectBadgePropertiesDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ProjectBadgePropertiesDto)
+  properties: ProjectBadgePropertiesDto;
 }
 
 export class ProjectArchitectureDto {

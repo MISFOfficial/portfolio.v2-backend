@@ -19,7 +19,7 @@ export class Project {
   year: string;
 
   @Prop({ type: Object, default: null })
-  badge?: { text: string; color: string } | null;
+  badge?: { properties: { text: string; color: string } } | null;
 
   @Prop({ required: true })
   overlayText: string;

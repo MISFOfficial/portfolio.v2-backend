@@ -1,14 +1,32 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   ArrayNotEmpty,
   IsArray,
   IsNotEmpty,
+  IsObject,
+  IsOptional,
   IsString,
   IsUrl,
   IsEnum,
+  ValidateNested,
 } from 'class-validator';
 import { ExperienceRole } from '../entities/experience.entity';
-import { Transform } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
+
+export class ExperienceBadgeDto {
+  @ApiProperty({
+    example: 'New',
+    description: 'The text displayed on the badge',
+  })
+  @IsString()
+  @IsNotEmpty()
+  text: string;
+
+  @ApiProperty({ example: 'blue', description: 'The color of the badge' })
+  @IsString()
+  @IsNotEmpty()
+  color: string;
+}
 
 export class CreateExperienceDto {
   @ApiProperty({ example: 'Aviro Soft', description: 'Name of the company' })
@@ -105,4 +123,18 @@ export class CreateExperienceDto {
   @IsUrl()
   @IsNotEmpty()
   companyWebsite: string;
+
+  @ApiPropertyOptional({
+    type: ExperienceBadgeDto,
+    nullable: true,
+    description: 'Optional badge information',
+  })
+  @IsOptional()
+  @IsObject()
+  @Transform(({ value }) =>
+    typeof value === 'string' ? JSON.parse(value) : value,
+  )
+  @ValidateNested()
+  @Type(() => ExperienceBadgeDto)
+  badge?: ExperienceBadgeDto | null;
 }

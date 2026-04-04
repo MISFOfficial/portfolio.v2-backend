@@ -56,6 +56,9 @@ export class Experience {
   })
   image: Image | string;
 
+  @Prop({ type: Object, default: null })
+  badge?: { text: string; color: string } | null;
+
   @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Image' }],
     required: false, // Legacy field

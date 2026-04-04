@@ -68,13 +68,18 @@ export class ProjectsController {
         technologies: { type: 'array', items: { type: 'string' } },
         features: { type: 'array', items: { type: 'string' } },
         lessons: { type: 'array', items: { type: 'string' } },
-        badge: {
-          type: 'object',
-          properties: {
-            text: { type: 'string' },
-            color: { type: 'string' },
-          },
-        },
+        // badge: {
+        //   type: 'object',
+        //   properties: {
+        //     properties: {
+        //       type: 'object',
+        //       properties: {
+        //         text: { type: 'string' },
+        //         color: { type: 'string' },
+        //       },
+        //     },
+        //   },
+        // },
         architecture: {
           type: 'object',
           properties: {
@@ -208,8 +213,13 @@ export class ProjectsController {
         badge: {
           type: 'object',
           properties: {
-            text: { type: 'string' },
-            color: { type: 'string' },
+            properties: {
+              type: 'object',
+              properties: {
+                text: { type: 'string' },
+                color: { type: 'string' },
+              },
+            },
           },
         },
         architecture: {
