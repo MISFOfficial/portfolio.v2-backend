@@ -10,7 +10,7 @@ import {
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
-class BadgeDto {
+export class ProjectBadgeDto {
   @ApiProperty({
     example: 'New',
     description: 'The text displayed on the badge',
@@ -25,7 +25,7 @@ class BadgeDto {
   color: string;
 }
 
-class ArchitectureDto {
+export class ProjectArchitectureDto {
   @ApiProperty({ example: 'Next.js', description: 'Frontend technology used' })
   @IsString()
   @IsNotEmpty()
@@ -55,7 +55,7 @@ class ArchitectureDto {
   infrastructure: string[];
 }
 
-class ProblemSolutionDto {
+export class ProjectProblemSolutionDto {
   @ApiProperty({
     example: 'Existing solutions were too complex.',
     description: 'The core problem this project aims to solve',
@@ -73,7 +73,7 @@ class ProblemSolutionDto {
   solution: string;
 }
 
-class MetricDto {
+export class ProjectMetricDto {
   @ApiProperty({ example: 'Performance', description: 'Label for the metric' })
   @IsString()
   @IsNotEmpty()
@@ -103,14 +103,6 @@ export class CreateProjectDto {
   title: string;
 
   @ApiProperty({
-    example: 'my-awesome-project',
-    description: 'Slug for URL generation',
-  })
-  @IsString()
-  @IsNotEmpty()
-  slug: string;
-
-  @ApiProperty({
     type: [String],
     example: ['React', 'NestJS'],
     description: 'Category tags',
@@ -129,7 +121,7 @@ export class CreateProjectDto {
   year: string;
 
   @ApiPropertyOptional({
-    type: BadgeDto,
+    type: ProjectBadgeDto,
     nullable: true,
     description: 'Optional badge information',
   })
@@ -139,8 +131,8 @@ export class CreateProjectDto {
     typeof value === 'string' ? JSON.parse(value) : value,
   )
   @ValidateNested()
-  @Type(() => BadgeDto)
-  badge?: BadgeDto | null;
+  @Type(() => ProjectBadgeDto)
+  badge?: ProjectBadgeDto | null;
 
   @ApiProperty({
     example: 'Hover for details',
@@ -187,29 +179,32 @@ export class CreateProjectDto {
   @IsNotEmpty()
   liveUrl: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'https://github.com/repo',
     description: 'Main GitHub repository',
+    nullable: true,
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  githubUrl: string;
+  githubUrl?: string | null;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'https://github.com/frontend',
     description: 'Frontend repository',
+    nullable: true,
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  fgithubUrl: string;
+  fgithubUrl?: string | null;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     example: 'https://github.com/backend',
     description: 'Backend repository',
+    nullable: true,
   })
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  bgithubUrl: string;
+  bgithubUrl?: string | null;
 
   @ApiProperty({
     type: [String],
@@ -233,7 +228,7 @@ export class CreateProjectDto {
   role: string;
 
   @ApiProperty({
-    type: ArchitectureDto,
+    type: ProjectArchitectureDto,
     description: 'Technical architecture details',
   })
   @IsObject()
@@ -241,11 +236,11 @@ export class CreateProjectDto {
     typeof value === 'string' ? JSON.parse(value) : value,
   )
   @ValidateNested()
-  @Type(() => ArchitectureDto)
-  architecture: ArchitectureDto;
+  @Type(() => ProjectArchitectureDto)
+  architecture: ProjectArchitectureDto;
 
   @ApiProperty({
-    type: ProblemSolutionDto,
+    type: ProjectProblemSolutionDto,
     description: 'Problem and Solution statement',
   })
   @IsObject()
@@ -253,11 +248,11 @@ export class CreateProjectDto {
     typeof value === 'string' ? JSON.parse(value) : value,
   )
   @ValidateNested()
-  @Type(() => ProblemSolutionDto)
-  problemSolution: ProblemSolutionDto;
+  @Type(() => ProjectProblemSolutionDto)
+  problemSolution: ProjectProblemSolutionDto;
 
   @ApiProperty({
-    type: [MetricDto],
+    type: [ProjectMetricDto],
     description: 'Project performance or success metrics',
   })
   @IsArray()
@@ -266,8 +261,8 @@ export class CreateProjectDto {
     typeof value === 'string' ? JSON.parse(value) : value,
   )
   @ValidateNested({ each: true })
-  @Type(() => MetricDto)
-  metrics: MetricDto[];
+  @Type(() => ProjectMetricDto)
+  metrics: ProjectMetricDto[];
 
   @ApiProperty({
     type: [String],

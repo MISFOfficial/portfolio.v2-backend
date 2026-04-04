@@ -45,17 +45,20 @@ export class ProjectsService {
 
     const createdProject = new this.projectModel(projectData);
     const savedProject = await createdProject.save();
-    return savedProject.populate(['image', 'images']);
+    return savedProject.populate([
+      { path: 'image', model: 'Image' },
+      { path: 'images', model: 'Image' },
+    ]);
   }
 
   async findAll(): Promise<Project[]> {
-    return this.projectModel.find().populate(['image', 'images']).exec();
+    return this.projectModel.find().populate('images').exec();
   }
 
   async findOne(id: string): Promise<Project> {
     const project = await this.projectModel
       .findById(id)
-      .populate(['image', 'images'])
+      .populate('images')
       .exec();
     if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found`);
@@ -91,7 +94,8 @@ export class ProjectsService {
 
     const updatedProject = await this.projectModel
       .findByIdAndUpdate(id, projectData, { new: true })
-      .populate(['image', 'images'])
+      .populate({ path: 'image', model: 'Image' })
+      .populate({ path: 'images', model: 'Image' })
       .exec();
     if (!updatedProject) {
       throw new NotFoundException(`Project with ID ${id} not found`);
