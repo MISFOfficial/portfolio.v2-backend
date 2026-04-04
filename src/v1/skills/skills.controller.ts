@@ -89,6 +89,60 @@ export class SkillsController {
     });
   }
 
+  @Get('frontend')
+  @ApiOperation({
+    summary: 'Get frontend skills',
+    description: 'Fetch all skills in the frontend category.',
+  })
+  @ApiResponse({ status: 200, description: 'Returns frontend skills.' })
+  async findFrontend(@Res() res: Response) {
+    const result = await this.skillsService.findByCategory(
+      SkillCategory.FRONTEND,
+    );
+    return successHandler({
+      res,
+      statusCode: HttpStatus.OK,
+      message: 'Frontend skills fetched successfully',
+      data: result,
+    });
+  }
+
+  @Get('backend')
+  @ApiOperation({
+    summary: 'Get backend skills',
+    description: 'Fetch all skills in the backend category.',
+  })
+  @ApiResponse({ status: 200, description: 'Returns backend skills.' })
+  async findBackend(@Res() res: Response) {
+    const result = await this.skillsService.findByCategory(
+      SkillCategory.BACKEND,
+    );
+    return successHandler({
+      res,
+      statusCode: HttpStatus.OK,
+      message: 'Backend skills fetched successfully',
+      data: result,
+    });
+  }
+
+  @Get('softskill')
+  @ApiOperation({
+    summary: 'Get soft skills',
+    description: 'Fetch all skills in the softskill category.',
+  })
+  @ApiResponse({ status: 200, description: 'Returns soft skills.' })
+  async findSoftSkills(@Res() res: Response) {
+    const result = await this.skillsService.findByCategory(
+      SkillCategory.SOFTSKILL,
+    );
+    return successHandler({
+      res,
+      statusCode: HttpStatus.OK,
+      message: 'Soft skills fetched successfully',
+      data: result,
+    });
+  }
+
   @Get('category/:category')
   @ApiOperation({
     summary: 'Get skills by category',
