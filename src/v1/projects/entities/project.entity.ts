@@ -9,9 +9,6 @@ export class Project {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Image', required: true })
-  image: Image | string;
-
   @Prop({ type: [String], required: true })
   tags: string[];
 
@@ -19,7 +16,7 @@ export class Project {
   year: string;
 
   @Prop({ type: Object, default: null })
-  badge?: { properties: { text: string; color: string } } | null;
+  badge?: { text: string; color: string } | null;
 
   @Prop({ required: true })
   overlayText: string;
@@ -39,9 +36,9 @@ export class Project {
   @Prop({ type: String, required: false, default: null })
   githubUrl?: string | null;
   @Prop({ type: String, required: false, default: null })
-  fgithubUrl?: string | null;
+  frontendGithubUrl?: string | null;
   @Prop({ type: String, required: false, default: null })
-  bgithubUrl?: string | null;
+  backendGithubUrl?: string | null;
 
   @Prop({ type: [String], required: true })
   features: string[];

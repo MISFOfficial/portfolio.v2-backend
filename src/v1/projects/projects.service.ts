@@ -20,45 +20,44 @@ export class ProjectsService {
 
   async create(
     createProjectDto: CreateProjectDto,
-    image?: Express.Multer.File,
-    images?: Express.Multer.File[],
-  ): Promise<Project> {
-    if (!image) {
-      throw new BadRequestException('Project cover image is required');
+    coverImage?: Express.Multer.File,
+    galleryImages?: Express.Multer.File[],
+  ): Promise<any> {
+    if (!coverImage && (!galleryImages || galleryImages.length === 0)) {
+      throw new BadRequestException('At least one project image is required');
     }
-    if (!images || images.length === 0) {
-      throw new BadRequestException(
-        'At least one additional project image is required',
-      );
-    }
+
     const projectData: any = { ...createProjectDto };
+    const allImageIds: any[] = [];
 
-    if (image) {
-      const uploadedImage = await this.imageService.create(image);
-      projectData.image = uploadedImage._id;
+    if (coverImage) {
+      const uploaded = await this.imageService.create(coverImage);
+      allImageIds.push(uploaded._id);
     }
 
-    if (images && images.length > 0) {
-      const uploadedImages = await this.imageService.createMultiple(images);
-      projectData.images = uploadedImages.map((img) => img._id);
+    if (galleryImages && galleryImages.length > 0) {
+      const uploaded = await this.imageService.createMultiple(galleryImages);
+      allImageIds.push(...uploaded.map((img) => img._id));
     }
+
+    projectData.images = allImageIds;
 
     const createdProject = new this.projectModel(projectData);
-    const savedProject = await createdProject.save();
-    return savedProject.populate([
-      { path: 'image', model: 'Image' },
-      { path: 'images', model: 'Image' },
-    ]);
+    const saved = await createdProject.save();
+    return saved.populate({ path: 'images', model: 'Image' });
   }
 
-  async findAll(): Promise<Project[]> {
-    return this.projectModel.find().populate('images').exec();
+  async findAll(): Promise<any[]> {
+    return this.projectModel
+      .find()
+      .populate({ path: 'images', model: 'Image' })
+      .exec();
   }
 
-  async findOne(id: string): Promise<Project> {
+  async findOne(id: string): Promise<any> {
     const project = await this.projectModel
       .findById(id)
-      .populate('images')
+      .populate({ path: 'images', model: 'Image' })
       .exec();
     if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found`);
@@ -69,38 +68,39 @@ export class ProjectsService {
   async update(
     id: string,
     updateProjectDto: UpdateProjectDto,
-    image?: Express.Multer.File,
-    images?: Express.Multer.File[],
-  ): Promise<Project> {
+    coverImage?: Express.Multer.File,
+    galleryImages?: Express.Multer.File[],
+  ): Promise<any> {
     const projectData: any = { ...updateProjectDto };
 
-    if (image) {
-      const uploadedImage = await this.imageService.create(image);
-      projectData.image = uploadedImage._id;
+    const newImageIds: any[] = [];
+
+    if (coverImage) {
+      const uploaded = await this.imageService.create(coverImage);
+      newImageIds.push(uploaded._id);
     }
 
-    if (images && images.length > 0) {
-      const uploadedImages = await this.imageService.createMultiple(images);
-      const newImageIds = uploadedImages.map((img) => img._id);
-
-      const existingProject = await this.findOne(id);
-      projectData.images = [
-        ...(existingProject.images || []).map((img: any) =>
-          img._id ? img._id : img,
-        ),
-        ...newImageIds,
-      ];
+    if (galleryImages && galleryImages.length > 0) {
+      const uploaded = await this.imageService.createMultiple(galleryImages);
+      newImageIds.push(...uploaded.map((img) => img._id));
     }
 
-    const updatedProject = await this.projectModel
+    if (newImageIds.length > 0) {
+      const existing = await this.findOne(id);
+      const existingIds = (existing.images || []).map((img: any) =>
+        img._id ? img._id : img,
+      );
+      projectData.images = [...existingIds, ...newImageIds];
+    }
+
+    const updated = await this.projectModel
       .findByIdAndUpdate(id, projectData, { new: true })
-      .populate({ path: 'image', model: 'Image' })
       .populate({ path: 'images', model: 'Image' })
       .exec();
-    if (!updatedProject) {
+    if (!updated) {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
-    return updatedProject;
+    return updated;
   }
 
   async remove(id: string): Promise<any> {
