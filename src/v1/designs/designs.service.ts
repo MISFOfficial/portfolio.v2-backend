@@ -46,10 +46,11 @@ export class DesignsService {
     return saved.populate({ path: 'images', model: 'Image' });
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(limit: number = 3): Promise<any[]> {
     return this.designModel
       .find()
       .populate({ path: 'images', model: 'Image' })
+      .limit(limit)
       .exec();
   }
 

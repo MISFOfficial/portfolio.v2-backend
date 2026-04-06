@@ -10,6 +10,7 @@ import {
   Res,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -79,8 +80,10 @@ export class SkillsController {
     description: 'Fetch all skills organized by category.',
   })
   @ApiResponse({ status: 200, description: 'Returns all skills.' })
-  async findAll(@Res() res: Response) {
-    const result = await this.skillsService.findAll();
+  async findAll(@Query('limit') limit: string, @Res() res: Response) {
+    const result = await this.skillsService.findAll(
+      limit ? parseInt(limit, 10) : 3,
+    );
     return successHandler({
       res,
       statusCode: HttpStatus.OK,

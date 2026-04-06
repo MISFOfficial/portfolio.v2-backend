@@ -10,6 +10,7 @@ import {
   Res,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -86,8 +87,10 @@ export class CertificatesController {
     description: 'Fetch a list of all certificate entries.',
   })
   @ApiResponse({ status: 200, description: 'Returns all certificates.' })
-  async findAll(@Res() res: Response) {
-    const result = await this.certificatesService.findAll();
+  async findAll(@Query('limit') limit: string, @Res() res: Response) {
+    const result = await this.certificatesService.findAll(
+      limit ? parseInt(limit, 10) : 3,
+    );
     return successHandler({
       res,
       statusCode: HttpStatus.OK,

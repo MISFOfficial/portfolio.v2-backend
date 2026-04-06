@@ -36,11 +36,12 @@ export class ExperiencesService {
     return savedExperience.populate(['image']);
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(limit: number = 3): Promise<any[]> {
     const experiences = await this.experienceModel
       .find()
       .populate('image')
       .populate('images')
+      .limit(limit)
       .exec();
 
     return experiences.map((exp) => {

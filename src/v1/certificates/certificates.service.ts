@@ -41,8 +41,8 @@ export class CertificatesService {
     return savedCertificate.populate(['image']);
   }
 
-  async findAll(): Promise<Certificate[]> {
-    return this.certificateModel.find().populate(['image']).exec();
+  async findAll(limit: number = 3): Promise<Certificate[]> {
+    return this.certificateModel.find().populate(['image']).limit(limit).exec();
   }
 
   async findOne(id: string): Promise<Certificate> {
