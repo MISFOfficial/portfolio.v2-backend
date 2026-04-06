@@ -47,10 +47,11 @@ export class ProjectsService {
     return saved.populate({ path: 'images', model: 'Image' });
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(limit: number = 3): Promise<any[]> {
     return this.projectModel
       .find()
       .populate({ path: 'images', model: 'Image' })
+      .limit(limit)
       .exec();
   }
 

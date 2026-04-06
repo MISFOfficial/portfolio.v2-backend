@@ -10,6 +10,7 @@ import {
   Res,
   UseInterceptors,
   UploadedFiles,
+  Query,
 } from '@nestjs/common';
 import {
   FilesInterceptor,
@@ -79,8 +80,10 @@ export class ProjectsController {
     description: 'Fetch a list of all projects available in the system.',
   })
   @ApiResponse({ status: 200, description: 'Returns all project records.' })
-  async findAll(@Res() res: Response) {
-    const result = await this.projectsService.findAll();
+  async findAll(@Query('limit') limit: string, @Res() res: Response) {
+    const result = await this.projectsService.findAll(
+      limit ? parseInt(limit, 10) : 3,
+    );
     return successHandler({
       res,
       statusCode: HttpStatus.OK,
