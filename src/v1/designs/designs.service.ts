@@ -19,50 +19,44 @@ export class DesignsService {
 
   async create(
     createDesignDto: CreateDesignDto,
-    image?: Express.Multer.File,
-    images?: Express.Multer.File[],
-  ): Promise<Design> {
-    if (!image) {
-      throw new BadRequestException('Design cover image is required');
+    coverImage?: Express.Multer.File,
+    galleryImages?: Express.Multer.File[],
+  ): Promise<any> {
+    if (!coverImage && (!galleryImages || galleryImages.length === 0)) {
+      throw new BadRequestException('At least one design image is required');
     }
 
     const designData: any = { ...createDesignDto };
+    const allImageIds: any[] = [];
 
-    if (image) {
-      const uploadedImage = await this.imageService.create(image);
-      designData.image = uploadedImage._id;
+    if (coverImage) {
+      const uploaded = await this.imageService.create(coverImage);
+      allImageIds.push(uploaded._id);
     }
 
-    if (images && images.length > 0) {
-      const uploadedImages = await this.imageService.createMultiple(images);
-      designData.images = uploadedImages.map((img) => img._id);
+    if (galleryImages && galleryImages.length > 0) {
+      const uploaded = await this.imageService.createMultiple(galleryImages);
+      allImageIds.push(...uploaded.map((img) => img._id));
     }
 
-    const createdDesign = new this.designModel(designData);
-    const savedDesign = await createdDesign.save();
-    return savedDesign.populate([
-      { path: 'image', model: 'Image' },
-      { path: 'images', model: 'Image' },
-    ]);
+    designData.images = allImageIds;
+
+    const created = new this.designModel(designData);
+    const saved = await created.save();
+    return saved.populate({ path: 'images', model: 'Image' });
   }
 
-  async findAll(): Promise<Design[]> {
+  async findAll(): Promise<any[]> {
     return this.designModel
       .find()
-      .populate([
-        { path: 'image', model: 'Image' },
-        { path: 'images', model: 'Image' },
-      ])
+      .populate({ path: 'images', model: 'Image' })
       .exec();
   }
 
-  async findOne(id: string): Promise<Design> {
+  async findOne(id: string): Promise<any> {
     const design = await this.designModel
       .findById(id)
-      .populate([
-        { path: 'image', model: 'Image' },
-        { path: 'images', model: 'Image' },
-      ])
+      .populate({ path: 'images', model: 'Image' })
       .exec();
     if (!design) {
       throw new NotFoundException(`Design with ID ${id} not found`);
@@ -73,46 +67,50 @@ export class DesignsService {
   async update(
     id: string,
     updateDesignDto: UpdateDesignDto,
-    image?: Express.Multer.File,
-    images?: Express.Multer.File[],
-  ): Promise<Design> {
-    const existingDesign = await this.designModel.findById(id).exec();
-    if (!existingDesign) {
+    coverImage?: Express.Multer.File,
+    galleryImages?: Express.Multer.File[],
+  ): Promise<any> {
+    const existing = await this.designModel.findById(id).exec();
+    if (!existing) {
       throw new NotFoundException(`Design with ID ${id} not found`);
     }
 
     const updateData: any = { ...updateDesignDto };
+    const newImageIds: any[] = [];
 
-    if (image) {
-      const uploadedImage = await this.imageService.create(image);
-      updateData.image = uploadedImage._id;
+    if (coverImage) {
+      const uploaded = await this.imageService.create(coverImage);
+      newImageIds.push(uploaded._id);
     }
 
-    if (images && images.length > 0) {
-      const uploadedImages = await this.imageService.createMultiple(images);
-      updateData.images = uploadedImages.map((img) => img._id);
+    if (galleryImages && galleryImages.length > 0) {
+      const uploaded = await this.imageService.createMultiple(galleryImages);
+      newImageIds.push(...uploaded.map((img) => img._id));
     }
 
-    const updatedDesign = await this.designModel
+    if (newImageIds.length > 0) {
+      const existingIds = (existing.images || []).map((img: any) =>
+        img._id ? img._id : img,
+      );
+      updateData.images = [...existingIds, ...newImageIds];
+    }
+
+    const updated = await this.designModel
       .findByIdAndUpdate(id, updateData, { new: true })
-      .populate([
-        { path: 'image', model: 'Image' },
-        { path: 'images', model: 'Image' },
-      ])
+      .populate({ path: 'images', model: 'Image' })
       .exec();
 
-    if (!updatedDesign) {
+    if (!updated) {
       throw new NotFoundException(`Design with ID ${id} not found`);
     }
-
-    return updatedDesign;
+    return updated;
   }
 
-  async remove(id: string): Promise<Design> {
-    const deletedDesign = await this.designModel.findByIdAndDelete(id).exec();
-    if (!deletedDesign) {
+  async remove(id: string): Promise<any> {
+    const deleted = await this.designModel.findByIdAndDelete(id).exec();
+    if (!deleted) {
       throw new NotFoundException(`Design with ID ${id} not found`);
     }
-    return deletedDesign;
+    return { deleted: true };
   }
 }

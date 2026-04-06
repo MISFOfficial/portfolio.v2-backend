@@ -9,9 +9,6 @@ export class Design {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Image', required: true })
-  image: Image | string;
-
   @Prop({
     type: [{ type: MongooseSchema.Types.ObjectId, ref: 'Image' }],
     required: true,
@@ -26,7 +23,7 @@ export class Design {
   year: string;
 
   @Prop({ type: Object, default: null })
-  badge?: { properties: { text: string; color: string } } | null;
+  badge?: { text: string; color: string } | null;
 
   @Prop({ required: true })
   description: string;

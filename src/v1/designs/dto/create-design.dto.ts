@@ -9,25 +9,34 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
+import { BadRequestException } from '@nestjs/common';
 
-export class DesignBadgePropertiesDto {
+const SafeJsonParse = ({ value, key }) => {
+  let parsed = value;
+  if (typeof value === 'string') {
+    try {
+      parsed = JSON.parse(value);
+    } catch (e) {
+      throw new BadRequestException(
+        `Invalid JSON format for field "${key}": ${e.message}`,
+      );
+    }
+  }
+  if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+    if (parsed.properties) return parsed.properties;
+    if (parsed.property) return parsed.property;
+  }
+  return parsed;
+};
+
+export class DesignBadgeDto {
   @ApiProperty({ example: 'Premium', description: 'Badge text' })
   @IsString()
-  @IsNotEmpty()
   text: string;
 
   @ApiProperty({ example: 'blue', description: 'Badge color' })
   @IsString()
-  @IsNotEmpty()
   color: string;
-}
-
-export class DesignBadgeDto {
-  @ApiProperty({ type: DesignBadgePropertiesDto })
-  @IsObject()
-  @ValidateNested()
-  @Type(() => DesignBadgePropertiesDto)
-  properties: DesignBadgePropertiesDto;
 }
 
 export class CreateDesignDto {
@@ -43,9 +52,7 @@ export class CreateDesignDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @IsString({ each: true })
   tags: string[];
 
@@ -54,12 +61,10 @@ export class CreateDesignDto {
   @IsNotEmpty()
   year: string;
 
-  @ApiPropertyOptional({ type: DesignBadgeDto })
+  @ApiPropertyOptional({ type: DesignBadgeDto, nullable: true })
   @IsOptional()
   @IsObject()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @ValidateNested()
   @Type(() => DesignBadgeDto)
   badge?: DesignBadgeDto | null;
@@ -79,9 +84,7 @@ export class CreateDesignDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @IsString({ each: true })
   tools: string[];
 
@@ -99,4 +102,16 @@ export class CreateDesignDto {
   @IsOptional()
   @IsString()
   figmaUrl?: string | null;
+
+  @ApiProperty({ type: 'string', format: 'binary', description: 'Cover image' })
+  @IsOptional()
+  image?: any;
+
+  @ApiProperty({
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+    description: 'Gallery images',
+  })
+  @IsOptional()
+  images?: any[];
 }

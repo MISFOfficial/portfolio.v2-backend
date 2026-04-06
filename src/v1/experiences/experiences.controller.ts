@@ -10,9 +10,10 @@ import {
   Res,
   UseInterceptors,
   UploadedFile,
+  UploadedFiles,
   Req,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
   ApiOperation,
   ApiResponse,
@@ -85,13 +86,19 @@ export class ExperiencesController {
     description: 'The experience has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'images', maxCount: 1 },
+    ]),
+  )
   async create(
     @Body() createExperienceDto: CreateExperienceDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFiles()
+    files: { image?: Express.Multer.File[]; images?: Express.Multer.File[] },
     @Res() res: Response,
   ) {
-    console.log(createExperienceDto);
+    const image = files?.image?.[0] ?? files?.images?.[0];
     const result = await this.experiencesService.create(
       createExperienceDto,
       image,
@@ -186,13 +193,20 @@ export class ExperiencesController {
     description: 'The experience record has been updated.',
   })
   @ApiResponse({ status: 404, description: 'Experience not found.' })
-  @UseInterceptors(FileInterceptor('image'))
+  @UseInterceptors(
+    FileFieldsInterceptor([
+      { name: 'image', maxCount: 1 },
+      { name: 'images', maxCount: 1 },
+    ]),
+  )
   async update(
     @Param('id') id: string,
     @Body() updateExperienceDto: UpdateExperienceDto,
-    @UploadedFile() image: Express.Multer.File,
+    @UploadedFiles()
+    files: { image?: Express.Multer.File[]; images?: Express.Multer.File[] },
     @Res() res: Response,
   ) {
+    const image = files?.image?.[0] ?? files?.images?.[0];
     const result = await this.experiencesService.update(
       id,
       updateExperienceDto,

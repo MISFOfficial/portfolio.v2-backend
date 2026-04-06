@@ -39,42 +39,8 @@ export class DesignsController {
       'Store a new design entry in the database with multiple images.',
   })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        image: { type: 'string', format: 'binary' },
-        images: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
-        },
-        title: { type: 'string' },
-        year: { type: 'string' },
-        description: { type: 'string' },
-        tags: { type: 'array', items: { type: 'string' } },
-        tools: { type: 'array', items: { type: 'string' } },
-        behanceUrl: { type: 'string' },
-        dribbbleUrl: { type: 'string' },
-        figmaUrl: { type: 'string' },
-        badge: {
-          type: 'object',
-          properties: {
-            properties: {
-              type: 'object',
-              properties: {
-                text: { type: 'string' },
-                color: { type: 'string' },
-              },
-            },
-          },
-        },
-      },
-    },
-  })
-  @ApiResponse({
-    status: 201,
-    description: 'Design created successfully.',
-  })
+  @ApiBody({ type: CreateDesignDto })
+  @ApiResponse({ status: 201, description: 'Design created successfully.' })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @UseInterceptors(
     FileFieldsInterceptor([
@@ -141,39 +107,10 @@ export class DesignsController {
     description: 'Modify an existing design entry.',
   })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        image: { type: 'string', format: 'binary' },
-        images: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
-        },
-        title: { type: 'string' },
-        year: { type: 'string' },
-        description: { type: 'string' },
-        tags: { type: 'array', items: { type: 'string' } },
-        tools: { type: 'array', items: { type: 'string' } },
-        behanceUrl: { type: 'string' },
-        dribbbleUrl: { type: 'string' },
-        figmaUrl: { type: 'string' },
-        badge: {
-          type: 'object',
-          properties: {
-            properties: {
-              type: 'object',
-              properties: {
-                text: { type: 'string' },
-                color: { type: 'string' },
-              },
-            },
-          },
-        },
-      },
-    },
-  })
+  @ApiBody({ type: UpdateDesignDto })
   @ApiParam({ name: 'id', description: 'MongoDB Design _id' })
+  @ApiResponse({ status: 200, description: 'Design updated successfully.' })
+  @ApiResponse({ status: 404, description: 'Design not found.' })
   @UseInterceptors(
     FileFieldsInterceptor([
       { name: 'image', maxCount: 1 },

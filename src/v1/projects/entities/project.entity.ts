@@ -9,9 +9,6 @@ export class Project {
   @Prop({ required: true })
   title: string;
 
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Image', required: true })
-  image: Image | string;
-
   @Prop({ type: [String], required: true })
   tags: string[];
 
