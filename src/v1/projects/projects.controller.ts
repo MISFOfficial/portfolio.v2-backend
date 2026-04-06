@@ -42,74 +42,7 @@ export class ProjectsController {
       'Store a new project entry in the database with full details and multiple images.',
   })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        image: {
-          type: 'string',
-          format: 'binary',
-        },
-        images: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
-        },
-        title: { type: 'string' },
-        year: { type: 'string' },
-        description: { type: 'string' },
-        fullDescription: { type: 'string' },
-        overlayText: { type: 'string' },
-        role: { type: 'string' },
-        liveUrl: { type: 'string' },
-        githubUrl: { type: 'string' },
-        fgithubUrl: { type: 'string' },
-        bgithubUrl: { type: 'string' },
-        tags: { type: 'array', items: { type: 'string' } },
-        technologies: { type: 'array', items: { type: 'string' } },
-        features: { type: 'array', items: { type: 'string' } },
-        lessons: { type: 'array', items: { type: 'string' } },
-        // badge: {
-        //   type: 'object',
-        //   properties: {
-        //     properties: {
-        //       type: 'object',
-        //       properties: {
-        //         text: { type: 'string' },
-        //         color: { type: 'string' },
-        //       },
-        //     },
-        //   },
-        // },
-        architecture: {
-          type: 'object',
-          properties: {
-            frontend: { type: 'string' },
-            backend: { type: 'string' },
-            database: { type: 'string' },
-            infrastructure: { type: 'array', items: { type: 'string' } },
-          },
-        },
-        problemSolution: {
-          type: 'object',
-          properties: {
-            problem: { type: 'string' },
-            solution: { type: 'string' },
-          },
-        },
-        metrics: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              label: { type: 'string' },
-              value: { type: 'string' },
-              description: { type: 'string' },
-            },
-          },
-        },
-      },
-    },
-  })
+  @ApiBody({ type: CreateProjectDto })
   @ApiResponse({
     status: 201,
     description: 'The project has been successfully created.',
@@ -184,74 +117,7 @@ export class ProjectsController {
     description: 'Modify an existing project entry using its MongoDB _id.',
   })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        image: {
-          type: 'string',
-          format: 'binary',
-        },
-        images: {
-          type: 'array',
-          items: { type: 'string', format: 'binary' },
-        },
-        title: { type: 'string' },
-        year: { type: 'string' },
-        description: { type: 'string' },
-        fullDescription: { type: 'string' },
-        overlayText: { type: 'string' },
-        role: { type: 'string' },
-        liveUrl: { type: 'string' },
-        githubUrl: { type: 'string' },
-        fgithubUrl: { type: 'string' },
-        bgithubUrl: { type: 'string' },
-        tags: { type: 'array', items: { type: 'string' } },
-        technologies: { type: 'array', items: { type: 'string' } },
-        features: { type: 'array', items: { type: 'string' } },
-        lessons: { type: 'array', items: { type: 'string' } },
-        badge: {
-          type: 'object',
-          properties: {
-            properties: {
-              type: 'object',
-              properties: {
-                text: { type: 'string' },
-                color: { type: 'string' },
-              },
-            },
-          },
-        },
-        architecture: {
-          type: 'object',
-          properties: {
-            frontend: { type: 'string' },
-            backend: { type: 'string' },
-            database: { type: 'string' },
-            infrastructure: { type: 'array', items: { type: 'string' } },
-          },
-        },
-        problemSolution: {
-          type: 'object',
-          properties: {
-            problem: { type: 'string' },
-            solution: { type: 'string' },
-          },
-        },
-        metrics: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              label: { type: 'string' },
-              value: { type: 'string' },
-              description: { type: 'string' },
-            },
-          },
-        },
-      },
-    },
-  })
+  @ApiBody({ type: UpdateProjectDto })
   @ApiParam({
     name: 'id',
     description: 'MongoDB Project _id',

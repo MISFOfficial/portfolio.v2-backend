@@ -9,28 +9,30 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
+import { BadRequestException } from '@nestjs/common';
 
-export class ProjectBadgePropertiesDto {
+const SafeJsonParse = ({ value, key }) => {
+  if (typeof value !== 'string') return value;
+  try {
+    return JSON.parse(value);
+  } catch (e) {
+    throw new BadRequestException(
+      `Invalid JSON format for field "${key}": ${e.message}`,
+    );
+  }
+};
+
+export class ProjectBadgeDto {
   @ApiProperty({
     example: 'New',
     description: 'The text displayed on the badge',
   })
   @IsString()
-  @IsNotEmpty()
   text: string;
 
   @ApiProperty({ example: 'blue', description: 'The color of the badge' })
   @IsString()
-  @IsNotEmpty()
   color: string;
-}
-
-export class ProjectBadgeDto {
-  @ApiProperty({ type: ProjectBadgePropertiesDto })
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ProjectBadgePropertiesDto)
-  properties: ProjectBadgePropertiesDto;
 }
 
 export class ProjectArchitectureDto {
@@ -56,9 +58,7 @@ export class ProjectArchitectureDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @IsString({ each: true })
   infrastructure: string[];
 }
@@ -117,9 +117,7 @@ export class CreateProjectDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @IsString({ each: true })
   tags: string[];
 
@@ -135,9 +133,7 @@ export class CreateProjectDto {
   })
   @IsOptional()
   @IsObject()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @ValidateNested()
   @Type(() => ProjectBadgeDto)
   badge?: ProjectBadgeDto | null;
@@ -173,9 +169,7 @@ export class CreateProjectDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @IsString({ each: true })
   technologies: string[];
 
@@ -203,7 +197,7 @@ export class CreateProjectDto {
   })
   @IsOptional()
   @IsString()
-  fgithubUrl?: string | null;
+  frontendGithubUrl?: string | null;
 
   @ApiPropertyOptional({
     example: 'https://github.com/backend',
@@ -212,7 +206,7 @@ export class CreateProjectDto {
   })
   @IsOptional()
   @IsString()
-  bgithubUrl?: string | null;
+  backendGithubUrl?: string | null;
 
   @ApiProperty({
     type: [String],
@@ -221,9 +215,7 @@ export class CreateProjectDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @IsString({ each: true })
   features: string[];
 
@@ -240,9 +232,7 @@ export class CreateProjectDto {
     description: 'Technical architecture details',
   })
   @IsObject()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @ValidateNested()
   @Type(() => ProjectArchitectureDto)
   architecture: ProjectArchitectureDto;
@@ -252,9 +242,7 @@ export class CreateProjectDto {
     description: 'Problem and Solution statement',
   })
   @IsObject()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @ValidateNested()
   @Type(() => ProjectProblemSolutionDto)
   problemSolution: ProjectProblemSolutionDto;
@@ -265,9 +253,7 @@ export class CreateProjectDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @ValidateNested({ each: true })
   @Type(() => ProjectMetricDto)
   metrics: ProjectMetricDto[];
@@ -279,9 +265,19 @@ export class CreateProjectDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @Transform(({ value }) =>
-    typeof value === 'string' ? JSON.parse(value) : value,
-  )
+  @Transform(SafeJsonParse)
   @IsString({ each: true })
   lessons: string[];
+
+  @ApiProperty({ type: 'string', format: 'binary', description: 'Cover image' })
+  @IsOptional()
+  image?: any;
+
+  @ApiProperty({
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+    description: 'Project images',
+  })
+  @IsOptional()
+  images?: any[];
 }

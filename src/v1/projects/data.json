@@ -1,0 +1,56 @@
+[
+  {
+    "id": "39",
+    "title": "Varaniben",
+    "image": "https://i.ibb.co.com/Gvk4HNFz/image.png",
+    "tags": ["Rental", "Solutions"],
+    "year": "2026",
+    "badge": {
+      "text": "Coming Soon",
+      "color": "bg-yellow-500"
+    },
+    "description": "A Rental Solutions Platform",
+    "fullDescription": "This project is a modern Rental Solutions Platform with a clean UI, smooth animations, and fully responsive layouts.",
+    "role": "Lead Full Stack Engineer",
+    "technologies": [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Framer Motion",
+      "Axios",
+      "Tanstack Query",
+      "Nest.js",
+      "MongoDB",
+      "Mongoose",
+      "JWT",
+      "Bcrypt",
+      "Cloudflare",
+      "Docker"
+    ],
+    "liveUrl": "https://varaniben.com",
+    "features": [
+      "Modern UI/UX",
+      "Secure Authentication",
+      "Optimized Performance"
+    ],
+    "architecture": {
+      "frontend": "Next.js (App Router) + Zustand",
+      "backend": "Nest.js",
+      "database": "MongoDB",
+      "infrastructure": ["Docker", "Cloudflare CDN"]
+    },
+    "problemSolution": {
+      "problem": "Existing platforms had poor mobile UX and slow checkout.",
+      "solution": "Implemented SSR and optimized flows reducing checkout time by 45%."
+    },
+    "metrics": [
+      { "label": "Performance", "value": "98/100", "description": "Lighthouse Score" },
+      { "label": "Security", "value": "A+", "description": "SSL Labs Rating" },
+      { "label": "Response", "value": "< 200ms", "description": "API Latency" }
+    ],
+    "lessons": [
+      "Optimized MongoDB indexing",
+      "Handled complex payment callbacks"
+    ]
+  }
+]

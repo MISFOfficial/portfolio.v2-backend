@@ -23,14 +23,12 @@ export class ProjectsService {
     image?: Express.Multer.File,
     images?: Express.Multer.File[],
   ): Promise<Project> {
-    if (!image) {
-      throw new BadRequestException('Project cover image is required');
-    }
-    if (!images || images.length === 0) {
+    if (!image && (!images || images.length === 0)) {
       throw new BadRequestException(
-        'At least one additional project image is required',
+        'At least one project image (cover or gallery) is required',
       );
     }
+
     const projectData: any = { ...createProjectDto };
 
     if (image) {
@@ -40,7 +38,13 @@ export class ProjectsService {
 
     if (images && images.length > 0) {
       const uploadedImages = await this.imageService.createMultiple(images);
-      projectData.images = uploadedImages.map((img) => img._id);
+      const uploadedImageIds = uploadedImages.map((img) => img._id);
+      projectData.images = uploadedImageIds;
+
+      // If no cover image was provided, use the first one from the gallery
+      if (!projectData.image) {
+        projectData.image = uploadedImageIds[0];
+      }
     }
 
     const createdProject = new this.projectModel(projectData);
