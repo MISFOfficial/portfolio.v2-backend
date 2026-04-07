@@ -23,6 +23,9 @@ export class Experience {
   role: ExperienceRole;
 
   @Prop({ required: true })
+  jobType: string;
+
+  @Prop({ required: true })
   duration: string;
 
   @Prop({ required: true })
