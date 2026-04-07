@@ -41,6 +41,7 @@ export class ExperiencesService {
       .find()
       .populate('image')
       .populate('images')
+      .sort({ createdAt: -1 })
       .limit(limit)
       .exec();
 

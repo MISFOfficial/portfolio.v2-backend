@@ -51,6 +51,7 @@ export class ProjectsService {
     return this.projectModel
       .find()
       .populate({ path: 'images', model: 'Image' })
+      .sort({ createdAt: -1 })
       .limit(limit)
       .exec();
   }

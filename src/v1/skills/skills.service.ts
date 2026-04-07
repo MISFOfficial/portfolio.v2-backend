@@ -35,7 +35,11 @@ export class SkillsService {
   }
 
   async findAll(): Promise<Skill[]> {
-    return this.skillModel.find().populate('logo').exec();
+    return this.skillModel
+      .find()
+      .populate('logo')
+      .sort({ createdAt: -1 })
+      .exec();
   }
 
   async findByCategory(category: SkillCategory): Promise<Skill[]> {

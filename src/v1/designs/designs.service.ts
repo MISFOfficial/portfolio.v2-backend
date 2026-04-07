@@ -50,6 +50,7 @@ export class DesignsService {
     return this.designModel
       .find()
       .populate({ path: 'images', model: 'Image' })
+      .sort({ createdAt: -1 })
       .limit(limit)
       .exec();
   }

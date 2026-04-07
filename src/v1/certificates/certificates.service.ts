@@ -42,7 +42,12 @@ export class CertificatesService {
   }
 
   async findAll(limit: number = 3): Promise<Certificate[]> {
-    return this.certificateModel.find().populate(['image']).limit(limit).exec();
+    return this.certificateModel
+      .find()
+      .populate(['image'])
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .exec();
   }
 
   async findOne(id: string): Promise<Certificate> {
