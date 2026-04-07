@@ -72,10 +72,22 @@ export class SkillsService {
   }
 
   async remove(id: string): Promise<any> {
-    const result = await this.skillModel.findByIdAndDelete(id).exec();
-    if (!result) {
+    const skill = await this.skillModel.findById(id).exec();
+    if (!skill) {
       throw new NotFoundException(`Skill with ID ${id} not found`);
     }
+
+    // 1. Delete associated logo
+    if (skill.logo) {
+      const imageId = (skill.logo as any)._id
+        ? (skill.logo as any)._id
+        : skill.logo;
+      await this.imageService.remove(imageId.toString());
+    }
+
+    // 2. Delete skill record
+    await this.skillModel.findByIdAndDelete(id).exec();
+
     return { deleted: true };
   }
 

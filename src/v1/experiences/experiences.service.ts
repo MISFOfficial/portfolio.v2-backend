@@ -120,7 +120,10 @@ export class ExperiencesService {
   }
 
   async remove(id: string): Promise<any> {
-    const experience = await this.findOne(id);
+    const experience = await this.experienceModel.findById(id).exec();
+    if (!experience) {
+      throw new NotFoundException(`Experience with ID ${id} not found`);
+    }
 
     // 1. Delete associated image
     if (experience.image) {
@@ -130,11 +133,17 @@ export class ExperiencesService {
       await this.imageService.remove(imageId.toString());
     }
 
-    // 2. Delete experience record
-    const result = await this.experienceModel.findByIdAndDelete(id).exec();
-    if (!result) {
-      throw new NotFoundException(`Experience with ID ${id} not found`);
+    // 2. Delete legacy images (if any)
+    if (experience.images && experience.images.length > 0) {
+      for (const image of experience.images) {
+        const imageId = (image as any)._id ? (image as any)._id : image;
+        await this.imageService.remove(imageId.toString());
+      }
     }
+
+    // 3. Delete experience record
+    await this.experienceModel.findByIdAndDelete(id).exec();
+
     return { deleted: true };
   }
 }

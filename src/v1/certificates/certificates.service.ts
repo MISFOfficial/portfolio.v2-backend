@@ -81,10 +81,23 @@ export class CertificatesService {
   }
 
   async remove(id: string): Promise<any> {
-    const result = await this.certificateModel.findByIdAndDelete(id).exec();
-    if (!result) {
+    const certificate = await this.certificateModel.findById(id).exec();
+
+    if (!certificate) {
       throw new NotFoundException(`Certificate with ID ${id} not found`);
     }
+
+    // 1. Delete associated image
+    if (certificate.image) {
+      const imageId = (certificate.image as any)._id
+        ? (certificate.image as any)._id
+        : certificate.image;
+      await this.imageService.remove(imageId.toString());
+    }
+
+    // 2. Delete certificate record
+    await this.certificateModel.findByIdAndDelete(id).exec();
+
     return { deleted: true };
   }
 }
