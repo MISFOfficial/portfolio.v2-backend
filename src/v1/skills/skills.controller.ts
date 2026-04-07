@@ -80,10 +80,8 @@ export class SkillsController {
     description: 'Fetch all skills organized by category.',
   })
   @ApiResponse({ status: 200, description: 'Returns all skills.' })
-  async findAll(@Query('limit') limit: string, @Res() res: Response) {
-    const result = await this.skillsService.findAll(
-      limit ? parseInt(limit, 10) : 3,
-    );
+  async findAll(@Res() res: Response) {
+    const result = await this.skillsService.findAll();
     return successHandler({
       res,
       statusCode: HttpStatus.OK,

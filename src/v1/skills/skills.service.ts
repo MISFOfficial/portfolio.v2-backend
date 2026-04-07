@@ -34,8 +34,8 @@ export class SkillsService {
     return savedSkill.populate({ path: 'logo', model: 'Image' });
   }
 
-  async findAll(limit: number = 3): Promise<Skill[]> {
-    return this.skillModel.find().populate('logo').limit(limit).exec();
+  async findAll(): Promise<Skill[]> {
+    return this.skillModel.find().populate('logo').exec();
   }
 
   async findByCategory(category: SkillCategory): Promise<Skill[]> {
