@@ -10,6 +10,7 @@ import { CertificatesModule } from './v1/certificates/certificates.module';
 import { DesignsModule } from './v1/designs/designs.module';
 import { ImageModule } from './image/image.module';
 import { SkillsModule } from './v1/skills/skills.module';
+import { CmsModule } from './v1/cms/cms.module';
 
 import { envConfig } from './config/env';
 
@@ -25,6 +26,7 @@ import { envConfig } from './config/env';
     DesignsModule,
     ImageModule,
     SkillsModule,
+    CmsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
