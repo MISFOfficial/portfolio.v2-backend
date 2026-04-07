@@ -39,7 +39,7 @@ export class Cms {
   @Prop({ required: true })
   description: string;
 
-  @Prop({ required: false, default: null })
+  @Prop({ type: String, required: false, default: null })
   liveUrl?: string | null;
 }
 
