@@ -19,9 +19,6 @@ export class Project {
   badge?: { text: string; color: string } | null;
 
   @Prop({ required: true })
-  overlayText: string;
-
-  @Prop({ required: true })
   description: string;
 
   @Prop({ required: true })

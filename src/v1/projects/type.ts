@@ -10,8 +10,6 @@ export interface Project {
     color: string;
   } | null;
 
-  overlayText?: string;
-
   description: string;
   fullDescription: string;
 

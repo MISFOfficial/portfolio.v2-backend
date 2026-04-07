@@ -139,14 +139,6 @@ export class CreateProjectDto {
   badge?: ProjectBadgeDto | null;
 
   @ApiProperty({
-    example: 'Hover for details',
-    description: 'Text shown on image overlay',
-  })
-  @IsString()
-  @IsNotEmpty()
-  overlayText: string;
-
-  @ApiProperty({
     example: 'Brief summary',
     description: 'Short project description',
   })
