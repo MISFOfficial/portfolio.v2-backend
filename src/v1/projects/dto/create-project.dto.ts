@@ -8,7 +8,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Type, Transform } from 'class-transformer';
+import { Type, Transform, plainToInstance } from 'class-transformer';
 import { BadRequestException } from '@nestjs/common';
 
 const SafeJsonParse = ({ value, key }) => {
@@ -21,6 +21,27 @@ const SafeJsonParse = ({ value, key }) => {
     );
   }
 };
+
+/**
+ * A Transform that parses JSON and then instantiates the result
+ * as the given DTO class so that `whitelist: true` doesn't strip
+ * properties from nested objects.
+ */
+const JsonParseAndInstantiate = (cls: any) =>
+  Transform(({ value, key }) => {
+    if (typeof value !== 'string') return value;
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => plainToInstance(cls, item));
+      }
+      return plainToInstance(cls, parsed);
+    } catch (e) {
+      throw new BadRequestException(
+        `Invalid JSON format for field "${key}": ${e.message}`,
+      );
+    }
+  });
 
 export class ProjectBadgeDto {
   @ApiProperty({
@@ -133,7 +154,7 @@ export class CreateProjectDto {
   })
   @IsOptional()
   @IsObject()
-  @Transform(SafeJsonParse)
+  @JsonParseAndInstantiate(ProjectBadgeDto)
   @ValidateNested()
   @Type(() => ProjectBadgeDto)
   badge?: ProjectBadgeDto | null;
@@ -224,7 +245,7 @@ export class CreateProjectDto {
     description: 'Technical architecture details',
   })
   @IsObject()
-  @Transform(SafeJsonParse)
+  @JsonParseAndInstantiate(ProjectArchitectureDto)
   @ValidateNested()
   @Type(() => ProjectArchitectureDto)
   architecture: ProjectArchitectureDto;
@@ -234,7 +255,7 @@ export class CreateProjectDto {
     description: 'Problem and Solution statement',
   })
   @IsObject()
-  @Transform(SafeJsonParse)
+  @JsonParseAndInstantiate(ProjectProblemSolutionDto)
   @ValidateNested()
   @Type(() => ProjectProblemSolutionDto)
   problemSolution: ProjectProblemSolutionDto;
@@ -245,7 +266,7 @@ export class CreateProjectDto {
   })
   @IsArray()
   @ArrayNotEmpty()
-  @Transform(SafeJsonParse)
+  @JsonParseAndInstantiate(ProjectMetricDto)
   @ValidateNested({ each: true })
   @Type(() => ProjectMetricDto)
   metrics: ProjectMetricDto[];

@@ -42,6 +42,8 @@ export class ProjectsService {
 
     projectData.images = allImageIds;
 
+    console.log(projectData);
+
     const createdProject = new this.projectModel(projectData);
     const saved = await createdProject.save();
     return saved.populate({ path: 'images', model: 'Image' });
