@@ -46,10 +46,12 @@ export class DesignsService {
     return saved.populate({ path: 'images', model: 'Image' });
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(limit: number = 3): Promise<any[]> {
     return this.designModel
       .find()
       .populate({ path: 'images', model: 'Image' })
+      .sort({ createdAt: -1 })
+      .limit(limit)
       .exec();
   }
 
@@ -107,10 +109,22 @@ export class DesignsService {
   }
 
   async remove(id: string): Promise<any> {
-    const deleted = await this.designModel.findByIdAndDelete(id).exec();
-    if (!deleted) {
+    const design = await this.designModel.findById(id).exec();
+    if (!design) {
       throw new NotFoundException(`Design with ID ${id} not found`);
     }
+
+    // 1. Delete associated images
+    if (design.images && design.images.length > 0) {
+      for (const image of design.images) {
+        const imageId = (image as any)._id ? (image as any)._id : image;
+        await this.imageService.remove(imageId.toString());
+      }
+    }
+
+    // 2. Delete design record
+    await this.designModel.findByIdAndDelete(id).exec();
+
     return { deleted: true };
   }
 }

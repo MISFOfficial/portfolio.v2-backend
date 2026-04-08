@@ -43,6 +43,11 @@ export class CreateExperienceDto {
   @IsNotEmpty()
   role: ExperienceRole;
 
+  @ApiProperty({ example: 'Full-time', description: 'Type of job' })
+  @IsString()
+  @IsNotEmpty()
+  jobType: string;
+
   @ApiProperty({
     example: '12-01-2025 - Present',
     description: 'Duration of the experience',

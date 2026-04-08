@@ -1,85 +1,88 @@
-// frond end
+export interface CmsProject {
+  id: string;
+  title: string;
+  Images: string;
+  tags: string[];
+  year: string;
+  platform: 'WordPress' | 'Shopify' | 'Webflow' | 'Wix' | 'Squarespace';
+  badge?: { text: string; color: string } | null;
+  description: string;
+  liveUrl?: string | null;
+}
 
-export const row1 = [
-  { name: 'HTML5', logo: 'https://cdn.simpleicons.org/html5/E34F26' },
-  { name: 'CSS3', logo: 'https://cdn.simpleicons.org/css3/1572B6' },
+export const cmsProjectsData: CmsProject[] = [
   {
-    name: 'Tailwind CSS',
-    logo: 'https://cdn.simpleicons.org/tailwindcss/06B6D4',
+    id: 'cms-1',
+    title: 'TutorSheba',
+    Images: 'https://i.ibb.co.com/VcCDHdLg/Images.png',
+    tags: ['Education', 'LMS', 'Blog'],
+    year: '2026',
+    platform: 'WordPress',
+    badge: { text: 'Live', color: 'bg-[#22c55e]' },
+    description:
+      'A professional tutor marketplace built on WordPress with custom Elementor templates, LMS integration, and SEO-optimized blog.',
+    liveUrl: 'https://tutorsheba.com',
   },
-  { name: 'JavaScript', logo: 'https://cdn.simpleicons.org/javascript/F7DF1E' },
-  { name: 'TypeScript', logo: 'https://cdn.simpleicons.org/typescript/3178C6' },
-  { name: 'React Js', logo: 'https://cdn.simpleicons.org/react/61DAFB' },
-  { name: 'Next.js', logo: 'https://cdn.simpleicons.org/nextdotjs/white' },
-  { name: 'React Native', logo: 'https://cdn.simpleicons.org/react/61DAFB' },
-  { name: 'React Expo', logo: 'https://cdn.simpleicons.org/expo/61DAFB' },
   {
-    name: 'React Navigation',
-    logo: 'https://cdn.simpleicons.org/react/61DAFB',
+    id: 'cms-2',
+    title: 'StyleHaven Store',
+    Images: 'https://i.ibb.co.com/SDCSP6pj/Images.png',
+    tags: ['Fashion', 'E-Commerce', 'Payments'],
+    year: '2025',
+    platform: 'Shopify',
+    badge: { text: 'E-Commerce', color: 'bg-[#7c3aed]' },
+    description:
+      'A premium fashion e-commerce store on Shopify with custom theme development, integrated payment gateways, and inventory management.',
+    liveUrl: 'https://stylehaven.store',
   },
-  { name: 'Firebase', logo: 'https://cdn.simpleicons.org/firebase/FFCA28' },
-  { name: 'Custom Auth', logo: 'https://cdn.simpleicons.org/clerk/6C47FF' },
-  { name: 'Next Auth', logo: 'https://next-auth.js.org/img/logo/logo-sm.png' },
-  { name: 'Redux', logo: 'https://cdn.simpleicons.org/redux/764ABC' },
   {
-    name: 'Zustand',
-    logo: 'https://raw.githubusercontent.com/pmndrs/zustand/main/docs/zustand-logo.png',
+    id: 'cms-3',
+    title: 'PixelCraft Agency',
+    Images: 'https://i.ibb.co.com/svcPkT1V/Images.png',
+    tags: ['Agency', 'Portfolio', 'Animations'],
+    year: '2025',
+    platform: 'Webflow',
+    description:
+      'A pixel-perfect creative agency portfolio on Webflow with complex CMS collections, scroll-driven animations, and client portal.',
+    liveUrl: 'https://pixelcraft.agency',
   },
-  { name: 'Framer Motion', logo: 'https://cdn.simpleicons.org/framer/0055FF' },
-  { name: 'GSAP', logo: 'https://cdn.simpleicons.org/gsap/339933' },
   {
-    name: 'TanStack Query',
-    logo: 'https://cdn.simpleicons.org/reactquery/FF4154',
+    id: 'cms-4',
+    title: 'GreenLeaf Organics',
+    Images: 'https://i.ibb.co.com/8DDcrmpj/Images.png',
+    tags: ['Organic', 'E-Commerce', 'Blog'],
+    year: '2025',
+    platform: 'WordPress',
+    badge: { text: 'WooCommerce', color: 'bg-[#9333ea]' },
+    description:
+      'An organic food e-commerce site powered by WooCommerce with subscription-based delivery system and recipe blog integration.',
+    liveUrl: 'https://greenleaforganics.com',
   },
-  { name: 'Axios', logo: 'https://cdn.simpleicons.org/axios/white' },
+  {
+    id: 'cms-5',
+    title: 'LuxeJewels',
+    Images: 'https://i.ibb.co.com/dwC4TdfH/Images.png',
+    tags: ['Jewelry', 'Luxury', 'Custom Theme'],
+    year: '2025',
+    platform: 'Shopify',
+    description:
+      'A high-end jewelry brand storefront with 3D product previews, custom Shopify Liquid theme, and AR try-on feature integration.',
+    liveUrl: 'https://luxejewels.com',
+  },
+  {
+    id: 'cms-6',
+    title: 'NovaTech Solutions',
+    Images: 'https://i.ibb.co.com/p6ZkhwLJ/Images.png',
+    tags: ['SaaS', 'Landing Page', 'CMS'],
+    year: '2026',
+    platform: 'Webflow',
+    badge: { text: 'Featured', color: 'bg-[#FF0055]' },
+    description:
+      'A dynamic SaaS landing page on Webflow with CMS-driven feature sections, interactive pricing calculator, and lead capture forms.',
+    liveUrl: 'https://novatech.solutions',
+  },
 ];
 
-// backend
-export const row2 = [
-  { name: 'Node.js', logo: 'https://cdn.simpleicons.org/nodedotjs/339933' },
-  { name: 'JavaScript', logo: 'https://cdn.simpleicons.org/javascript/F7DF1E' },
-  { name: 'TypeScript', logo: 'https://cdn.simpleicons.org/typescript/3178C6' },
-  { name: 'Python', logo: 'https://cdn.simpleicons.org/python/3178C6' },
-  { name: 'C', logo: 'https://cdn.simpleicons.org/c/3178C6' },
-  { name: 'C++', logo: 'https://cdn.simpleicons.org/c++/3178C6' },
-  { name: 'Express.js', logo: 'https://cdn.simpleicons.org/express/white' },
-  { name: 'Nest.js', logo: 'https://cdn.simpleicons.org/nestjs/ff5e5e' },
-  { name: 'MongoDB', logo: 'https://cdn.simpleicons.org/mongodb/47A248' },
-  { name: 'Mongoose', logo: 'https://cdn.simpleicons.org/mongoose/ff5e5e' },
-  { name: 'Axios', logo: 'https://cdn.simpleicons.org/axios/white' },
-  { name: 'Redux', logo: 'https://cdn.simpleicons.org/redux/764ABC' },
-  { name: 'Zustand', logo: 'https://cdn.simpleicons.org/zustand/764ABC' },
-  {
-    name: 'TanStack Query',
-    logo: 'https://cdn.simpleicons.org/reactquery/FF4154',
-  },
-  { name: 'Postman', logo: 'https://cdn.simpleicons.org/postman/2496ED' },
-  { name: 'Hoppscotch', logo: 'https://cdn.simpleicons.org/hoppscotch/15d15d' },
-  { name: 'Swagger UI', logo: 'https://cdn.simpleicons.org/swagger/339933' },
-];
-
-// soft skill
-export const row3 = [
-  { name: 'Modern UI/UX', logo: 'https://cdn.simpleicons.org/figma/F24E1E' },
-  { name: 'Adobe XD', logo: 'https://cdn.simpleicons.org/adobexd/white' },
-  { name: 'Figma Design', logo: 'https://cdn.simpleicons.org/figma/F24E1E' },
-  { name: 'Pixso', logo: 'https://cdn.simpleicons.org/pixso/white' },
-  {
-    name: 'Google Analytics',
-    logo: 'https://cdn.simpleicons.org/google/4285F4',
-  },
-  { name: 'Docker', logo: 'https://cdn.simpleicons.org/docker/2496ED' },
-  { name: 'Git', logo: 'https://cdn.simpleicons.org/git/2496ED' },
-  { name: 'GitHub', logo: 'https://cdn.simpleicons.org/github/2496ED' },
-  { name: 'Jira', logo: 'https://cdn.simpleicons.org/jira/2496ED' },
-  { name: 'Mermaid', logo: 'https://cdn.simpleicons.org/mermaid/2496ED' },
-  { name: 'OpenAI', logo: 'https://cdn.simpleicons.org/openai/2496ED' },
-  { name: 'Parplexity', logo: 'https://cdn.simpleicons.org/parplexity/2496ED' },
-  { name: 'Cloudinary', logo: 'https://cdn.simpleicons.org/cloudinary/2496ED' },
-  { name: 'cloudflare', logo: 'https://cdn.simpleicons.org/cloudflare/f6821f' },
-  { name: 'VSCode', logo: 'https://cdn.simpleicons.org/vscode/2496ED' },
-  {
-    name: 'Antigravity',
-    logo: 'https://cdn.simpleicons.org/antigravity/2496ED',
-  },
-];
+export function getCmsProjectById(id: string) {
+  return cmsProjectsData.find((project) => project.id === id);
+}

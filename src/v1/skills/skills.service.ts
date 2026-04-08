@@ -9,7 +9,6 @@ import { CreateSkillDto } from './dto/create-skill.dto';
 import { UpdateSkillDto } from './dto/update-skill.dto';
 import { Skill, SkillDocument, SkillCategory } from './entities/skill.entity';
 import { ImageService } from 'src/image/image.service';
-import { row1, row2, row3 } from 'src/config/Data';
 
 @Injectable()
 export class SkillsService {
@@ -35,7 +34,11 @@ export class SkillsService {
   }
 
   async findAll(): Promise<Skill[]> {
-    return this.skillModel.find().populate('logo').exec();
+    return this.skillModel
+      .find()
+      .populate('logo')
+      .sort({ createdAt: -1 })
+      .exec();
   }
 
   async findByCategory(category: SkillCategory): Promise<Skill[]> {
@@ -72,29 +75,22 @@ export class SkillsService {
   }
 
   async remove(id: string): Promise<any> {
-    const result = await this.skillModel.findByIdAndDelete(id).exec();
-    if (!result) {
+    const skill = await this.skillModel.findById(id).exec();
+    if (!skill) {
       throw new NotFoundException(`Skill with ID ${id} not found`);
     }
-    return { deleted: true };
-  }
 
-  async seed(): Promise<any> {
-    const existingSkills = await this.skillModel.countDocuments();
-    if (existingSkills > 0) {
-      return { message: 'Database already seeded', count: existingSkills };
+    // 1. Delete associated logo
+    if (skill.logo) {
+      const imageId = (skill.logo as any)._id
+        ? (skill.logo as any)._id
+        : skill.logo;
+      await this.imageService.remove(imageId.toString());
     }
 
-    const skillsToSeed = [
-      ...row1.map((s) => ({ ...s, category: SkillCategory.FRONTEND })),
-      ...row2.map((s) => ({ ...s, category: SkillCategory.BACKEND })),
-      ...row3.map((s) => ({ ...s, category: SkillCategory.SOFTSKILL })),
-    ];
+    // 2. Delete skill record
+    await this.skillModel.findByIdAndDelete(id).exec();
 
-    await this.skillModel.insertMany(skillsToSeed);
-    return {
-      message: 'Database seeded successfully',
-      count: skillsToSeed.length,
-    };
+    return { deleted: true };
   }
 }

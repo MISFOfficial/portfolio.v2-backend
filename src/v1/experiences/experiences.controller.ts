@@ -12,6 +12,7 @@ import {
   UploadedFile,
   UploadedFiles,
   Req,
+  Query,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import {
@@ -55,6 +56,7 @@ export class ExperiencesController {
           type: 'string',
           enum: Object.values(ExperienceRole),
         },
+        jobType: { type: 'string' },
         duration: { type: 'string' },
         location: { type: 'string' },
         description: { type: 'string' },
@@ -69,6 +71,7 @@ export class ExperiencesController {
         'image',
         'company',
         'role',
+        'jobType',
         'duration',
         'location',
         'description',
@@ -119,8 +122,10 @@ export class ExperiencesController {
       'Fetch a list of all experience entries available in the system.',
   })
   @ApiResponse({ status: 200, description: 'Returns all experience records.' })
-  async findAll(@Res() res: Response) {
-    const result = await this.experiencesService.findAll();
+  async findAll(@Query('limit') limit: string, @Res() res: Response) {
+    const result = await this.experiencesService.findAll(
+      limit ? parseInt(limit, 10) : 3,
+    );
     return successHandler({
       res,
       statusCode: HttpStatus.OK,
@@ -171,6 +176,7 @@ export class ExperiencesController {
           type: 'string',
           enum: Object.values(ExperienceRole),
         },
+        jobType: { type: 'string' },
         duration: { type: 'string' },
         location: { type: 'string' },
         description: { type: 'string' },

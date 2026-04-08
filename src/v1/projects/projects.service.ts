@@ -42,15 +42,19 @@ export class ProjectsService {
 
     projectData.images = allImageIds;
 
+    console.log(projectData);
+
     const createdProject = new this.projectModel(projectData);
     const saved = await createdProject.save();
     return saved.populate({ path: 'images', model: 'Image' });
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(limit: number = 3): Promise<any[]> {
     return this.projectModel
       .find()
       .populate({ path: 'images', model: 'Image' })
+      .sort({ createdAt: -1 })
+      .limit(limit)
       .exec();
   }
 
@@ -104,10 +108,22 @@ export class ProjectsService {
   }
 
   async remove(id: string): Promise<any> {
-    const result = await this.projectModel.findByIdAndDelete(id).exec();
-    if (!result) {
+    const project = await this.projectModel.findById(id).exec();
+    if (!project) {
       throw new NotFoundException(`Project with ID ${id} not found`);
     }
+
+    // 1. Delete associated images
+    if (project.images && project.images.length > 0) {
+      for (const image of project.images) {
+        const imageId = (image as any)._id ? (image as any)._id : image;
+        await this.imageService.remove(imageId.toString());
+      }
+    }
+
+    // 2. Delete project record
+    await this.projectModel.findByIdAndDelete(id).exec();
+
     return { deleted: true };
   }
 }

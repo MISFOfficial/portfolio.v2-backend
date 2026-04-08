@@ -10,6 +10,7 @@ import {
   Res,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -242,22 +243,6 @@ export class SkillsController {
       res,
       statusCode: HttpStatus.OK,
       message: 'Skill deleted successfully',
-      data: result,
-    });
-  }
-
-  @Post('seed')
-  @ApiOperation({
-    summary: 'Seed initial skills data',
-    description: 'Populates the database with initial skills from Data.ts.',
-  })
-  @ApiResponse({ status: 201, description: 'Seeding successful' })
-  async seed(@Res() res: Response) {
-    const result = await this.skillsService.seed();
-    return successHandler({
-      res,
-      statusCode: HttpStatus.CREATED,
-      message: result.message,
       data: result,
     });
   }
