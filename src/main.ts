@@ -7,8 +7,16 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 import { envConfig } from './config/env';
 import * as dns from 'dns';
+import express from 'express';
+import ServerlessHttp from 'serverless-http';
 dns.setServers(['1.1.1.1']);
 
+
+// use it for vercel cz support only server less
+const appExpress = express();
+
+
+// main
 async function main() {
   const port = envConfig.PORT;
   const app = await NestFactory.create(AppModule);
@@ -47,3 +55,8 @@ async function main() {
   console.log(`Swagger documentation: http://localhost:${port}/api-docs`);
 }
 main();
+
+
+
+// use it for vercel cz support only server less
+export default ServerlessHttp(appExpress);
