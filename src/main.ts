@@ -4,15 +4,12 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { envConfig } from './config/env';
-import * as dns from 'dns';
 import express from 'express';
 import ServerlessHttp from 'serverless-http';
 import { ExpressAdapter } from '@nestjs/platform-express';
 
-// Set DNS servers
-dns.setServers(['1.1.1.1']);
-
 const expressApp = express();
+
 
 /**
  * Shared configuration for both Local and Vercel environments

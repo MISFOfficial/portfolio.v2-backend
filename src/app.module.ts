@@ -19,6 +19,7 @@ import { envConfig } from './config/env';
     ConfigModule.forRoot(),
     MongooseModule.forRoot(envConfig.DB_URI, {
       dbName: 'mukstul',
+      serverSelectionTimeoutMS: 5000, // Fail after 5s instead of hanging
     }),
     ProjectsModule,
     ExperiencesModule,
