@@ -7,7 +7,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { InternalServerErrorException } from '@nestjs/common';
 
-import { v4 as uuidv4 } from 'uuid';
+
 import sharp from 'sharp';
 import { envConfig } from '../../config/env';
 
@@ -93,6 +93,7 @@ export const uploadToR2 = async (
 
     // Generate unique key for the file
     const fileExtension = originalnameToUpload.split('.').pop();
+    const { v4: uuidv4 } = await import('uuid');
     const uniqueFilename = `${uuidv4()}.${fileExtension}`;
     const key = `${folder}/${uniqueFilename}`;
 
