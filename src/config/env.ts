@@ -7,8 +7,6 @@ interface Env {
   ENV_MODE: string;
   PORT: number;
   ALLOWED_ORIGINS: string | string[];
-  BACKEND_URL: string;
-  FRONTEND_URL: string;
   R2_ACCESS_KEY_ID?: string;
   R2_SECRET_ACCESS_KEY?: string;
   R2_BUCKET_NAME?: string;
@@ -26,8 +24,6 @@ export const envConfig: Env = {
     (process.env.ENV_MODE || 'development') === 'production'
       ? ['https://muksitul.pages.dev', "http://localhost:3000"]
       : ['http://localhost:3000'],
-  BACKEND_URL: process.env.BACKEND_URL || 'http://localhost:5000',
-  FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
   R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
   R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
   R2_BUCKET_NAME: process.env.R2_BUCKET_NAME,
