@@ -39,18 +39,17 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     // Terminal Logging
     this.logger.error(
-      `${(request as any).method} ${(request as any).url} ${status} - Message: ${
-        Array.isArray(message) ? message.join(', ') : message
+      `${request.method} ${request.url} ${status} - Message: ${Array.isArray(message) ? message.join(', ') : message
       }`,
       exception instanceof Error ? exception.stack : JSON.stringify(exception),
     );
 
-    (response as any).status(status).json({
+    response.status(status).json({
       success: false,
       statusCode: status,
       message: Array.isArray(message) ? message[0] : message,
       error: error,
-      path: (request as any).url,
+      path: request.url,
       timestamp: new Date().toISOString(),
     });
   }
