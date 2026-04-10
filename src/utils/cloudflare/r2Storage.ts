@@ -106,7 +106,7 @@ export const uploadToR2 = async (
     };
 
     const command = new PutObjectCommand(uploadParams);
-    await client.send(command);
+    await (client as any).send(command);
 
     // Generate public URL
     // const publicUrl = R2_PUBLIC_URL
@@ -160,7 +160,7 @@ export const deleteFromR2 = async (key: string): Promise<void> => {
       Key: key,
     });
 
-    await client.send(command);
+    await (client as any).send(command);
   } catch (error: any) {
     console.error('R2 deletion error:', error.message);
     // Don't throw error for deletion failures

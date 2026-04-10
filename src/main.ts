@@ -58,7 +58,7 @@ if (process.env.NODE_ENV !== 'production') {
     try {
       const expressApp = await bootstrap();
       const port = envConfig.PORT || 3000;
-      expressApp.listen(port, () => {
+      (expressApp as any).listen(port, () => {
         console.log(`My Portfolio API is running at port ${port}`);
         console.log(`Swagger documentation: http://localhost:${port}/api-docs`);
       });

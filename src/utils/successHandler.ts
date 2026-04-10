@@ -34,5 +34,5 @@ export const successHandler = ({
 
   if (meta) responseBody.meta = meta;
 
-  return res.status(statusCode).json(responseBody);
+  return (res as any).status(statusCode).json(responseBody);
 };
