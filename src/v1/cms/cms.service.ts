@@ -15,7 +15,7 @@ export class CmsService {
   constructor(
     @InjectModel(Cms.name) private cmsModel: Model<CmsDocument>,
     private readonly imageService: ImageService,
-  ) {}
+  ) { }
 
   async create(
     createCmsDto: CreateCmsDto,
@@ -107,5 +107,9 @@ export class CmsService {
     await this.cmsModel.findByIdAndDelete(id).exec();
 
     return { deleted: true };
+  }
+
+  async count(): Promise<number> {
+    return this.cmsModel.countDocuments().exec();
   }
 }

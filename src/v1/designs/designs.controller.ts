@@ -157,4 +157,20 @@ export class DesignsController {
       data: result,
     });
   }
+
+  @Get('count')
+  @ApiOperation({
+    summary: 'Get total design count',
+    description: 'Retrieve the total number of designs in the system.',
+  })
+  @ApiResponse({ status: 200, description: 'Returns the count of designs.' })
+  async count(@Res() res: Response) {
+    const result = await this.designsService.count();
+    return successHandler({
+      res,
+      statusCode: HttpStatus.OK,
+      message: 'Design count fetched successfully',
+      data: result,
+    });
+  }
 }

@@ -127,4 +127,8 @@ export class DesignsService {
 
     return { deleted: true };
   }
+
+  async count(): Promise<number> {
+    return this.designModel.countDocuments().exec();
+  }
 }

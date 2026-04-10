@@ -180,4 +180,20 @@ export class CmsController {
       data: result,
     });
   }
+
+  @Get('count')
+  @ApiOperation({
+    summary: 'Get total CMS project count',
+    description: 'Retrieve the total number of CMS projects in the system.',
+  })
+  @ApiResponse({ status: 200, description: 'Returns the count of CMS projects.' })
+  async count(@Res() res: Response) {
+    const result = await this.cmsService.count();
+    return successHandler({
+      res,
+      statusCode: HttpStatus.OK,
+      message: 'CMS project count fetched successfully',
+      data: result,
+    });
+  }
 }

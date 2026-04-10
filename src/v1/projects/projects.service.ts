@@ -16,7 +16,7 @@ export class ProjectsService {
     @InjectModel(Project.name)
     private projectModel: Model<ProjectDocument>,
     private readonly imageService: ImageService,
-  ) {}
+  ) { }
 
   async create(
     createProjectDto: CreateProjectDto,
@@ -125,5 +125,9 @@ export class ProjectsService {
     await this.projectModel.findByIdAndDelete(id).exec();
 
     return { deleted: true };
+  }
+
+  async count(): Promise<number> {
+    return this.projectModel.countDocuments().exec();
   }
 }

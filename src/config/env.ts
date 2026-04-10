@@ -17,7 +17,7 @@ interface Env {
 }
 
 export const envConfig: Env = {
-  DB_URI: process.env.MONGODB_URL || 'mongodb://localhost:27017/portfolio',
+  DB_URI: process.env.MONGODB_URL!,
   ENV_MODE: process.env.ENV_MODE || 'development',
   PORT: Number(process.env.PORT) || 5000,
   ALLOWED_ORIGINS:

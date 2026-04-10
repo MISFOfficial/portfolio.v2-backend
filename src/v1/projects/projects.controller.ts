@@ -179,4 +179,20 @@ export class ProjectsController {
       data: result,
     });
   }
+
+  @Get('count')
+  @ApiOperation({
+    summary: 'Get total project count',
+    description: 'Retrieve the total number of projects in the system.',
+  })
+  @ApiResponse({ status: 200, description: 'Returns the count of projects.' })
+  async count(@Res() res: Response) {
+    const result = await this.projectsService.count();
+    return successHandler({
+      res,
+      statusCode: HttpStatus.OK,
+      message: 'Project count fetched successfully',
+      data: result,
+    });
+  }
 }
