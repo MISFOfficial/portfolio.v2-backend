@@ -32,7 +32,7 @@ import { successHandler } from 'src/utils/successHandler';
 @Controller('cms')
 @ApiTags('CMS Projects')
 export class CmsController {
-  constructor(private readonly cmsService: CmsService) {}
+  constructor(private readonly cmsService: CmsService) { }
 
   @Post('create')
   @ApiOperation({
@@ -193,7 +193,7 @@ export class CmsController {
       res,
       statusCode: HttpStatus.OK,
       message: 'CMS project count fetched successfully',
-      data: result,
+      data: { count: result },
     });
   }
 }

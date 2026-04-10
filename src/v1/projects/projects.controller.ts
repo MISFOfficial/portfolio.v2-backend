@@ -34,7 +34,7 @@ import { successHandler } from 'src/utils/successHandler';
 @Controller('projects')
 @ApiTags('Projects')
 export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+  constructor(private readonly projectsService: ProjectsService) { }
 
   @Post('create')
   @ApiOperation({
@@ -192,7 +192,7 @@ export class ProjectsController {
       res,
       statusCode: HttpStatus.OK,
       message: 'Project count fetched successfully',
-      data: result,
+      data: { count: result },
     });
   }
 }

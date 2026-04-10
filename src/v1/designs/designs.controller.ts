@@ -170,7 +170,7 @@ export class DesignsController {
       res,
       statusCode: HttpStatus.OK,
       message: 'Design count fetched successfully',
-      data: result,
+      data: { count: result },
     });
   }
 }
