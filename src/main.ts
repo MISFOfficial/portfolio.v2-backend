@@ -27,7 +27,7 @@ async function main() {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: false,
-      transform: true, v
+      transform: true,
     }),
   );
 
