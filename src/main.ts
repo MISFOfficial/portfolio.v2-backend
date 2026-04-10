@@ -1,20 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+
 import { envConfig } from './config/env';
-import express from 'express';
-import ServerlessHttp from 'serverless-http';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import * as dns from 'dns';
+dns.setServers(['1.1.1.1']);
 
-const expressApp = express();
+async function main() {
+  const port = envConfig.PORT;
+  const app = await NestFactory.create(AppModule);
 
-
-/**
- * Shared configuration for both Local and Vercel environments
- */
-async function setupApp(app: INestApplication) {
   // CORS
   app.enableCors({
     origin: envConfig.ALLOWED_ORIGINS,
@@ -29,11 +27,11 @@ async function setupApp(app: INestApplication) {
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: false,
-      transform: true,
+      transform: true, v
     }),
   );
 
-  // Swagger Documentation Setup
+  // Swagger Configuration
   const config = new DocumentBuilder()
     .setTitle('My Portfolio API')
     .setDescription('The Portfolio API description')
@@ -42,44 +40,10 @@ async function setupApp(app: INestApplication) {
     .addTag('Experiences')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('fateen/api-docs', app, document);
+  SwaggerModule.setup('api-docs', app, document);
 
-  await app.init();
+  await app.listen(port);
+  console.log(`My Portfolio API is running at port ${port}`);
+  console.log(`Swagger documentation: http://localhost:${port}/api-docs`);
 }
-
-/**
- * VERCEL / SERVERLESS EXPORT
- */
-async function bootstrapServerless() {
-  const app = await NestFactory.create(
-    AppModule,
-    new ExpressAdapter(expressApp),
-  );
-  await setupApp(app);
-}
-
-let isInitialized = false;
-
-export default async (req: any, res: any) => {
-  if (!isInitialized) {
-    await bootstrapServerless();
-    isInitialized = true;
-  }
-  const handler = ServerlessHttp(expressApp);
-  return handler(req, res);
-};
-
-/**
- * LOCAL DEVELOPMENT SERVER
- */
-if (process.env.ENV_MODE !== 'production' && !process.env.VERCEL) {
-  const port = envConfig.PORT || 5000;
-  async function startLocal() {
-    const app = await NestFactory.create(AppModule);
-    await setupApp(app); // Ensure Swagger and other configs are applied locally
-    await app.listen(port);
-    console.log(`Local server running at http://localhost:${port}`);
-    console.log(`Swagger documentation: http://localhost:${port}/fateen/api-docs`);
-  }
-  startLocal();
-}
+main();
