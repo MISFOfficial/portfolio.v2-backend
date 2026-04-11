@@ -22,7 +22,7 @@ export const envConfig: Env = {
   PORT: Number(process.env.PORT) || 5000,
   ALLOWED_ORIGINS:
     (process.env.ENV_MODE || 'development') === 'production'
-      ? ['https://muksitul.pages.dev', "http://localhost:3000"]
+      ? ['https://muksitul.pages.dev', "http://localhost:3000", "https://muksitul.netlify.app"]
       : ['http://localhost:3000'],
   R2_ACCESS_KEY_ID: process.env.R2_ACCESS_KEY_ID,
   R2_SECRET_ACCESS_KEY: process.env.R2_SECRET_ACCESS_KEY,
