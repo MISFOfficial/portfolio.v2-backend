@@ -1,5 +1,7 @@
-allowBuilds:
-  '@nestjs/core': true
-  '@scarf/scarf': true
-  sharp: true
-  unrs-resolver: true
+packages:
+  - '.'
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@scarf/scarf'
+  - sharp
+  - unrs-resolver
