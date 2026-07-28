@@ -49,12 +49,15 @@ export class ProjectsService {
     return saved.populate({ path: 'images', model: 'Image' });
   }
 
-  async findAll(limit: number = 3): Promise<any[]> {
+  async findAll(limit: number = 10, skip: number = 0): Promise<any[]> {
+    const take = Number(limit) || 10;
+    const offset = Number(skip) || 0;
     return this.projectModel
       .find()
       .populate({ path: 'images', model: 'Image' })
-      .sort({ createdAt: -1 })
-      .limit(limit)
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(offset)
+      .limit(take)
       .exec();
   }
 

@@ -77,13 +77,18 @@ export class ProjectsController {
   @Get('all')
   @ApiOperation({
     summary: 'Get all projects',
-    description: 'Fetch a list of all projects available in the system.',
+    description: 'Fetch a list of projects available in the system with optional limit and skip pagination.',
   })
   @ApiResponse({ status: 200, description: 'Returns all project records.' })
-  async findAll(@Query('limit') limit: string, @Res() res: Response) {
-    const result = await this.projectsService.findAll(
-      limit ? parseInt(limit, 10) : 3,
-    );
+  async findAll(
+    @Query('limit') limit: string,
+    @Query('skip') skip: string,
+    @Res() res: Response,
+  ) {
+    const parsedLimit = limit ? parseInt(limit, 10) : 10;
+    const parsedSkip = skip ? parseInt(skip, 10) : 0;
+    console.log('[ProjectsController.findAll]', { limit, skip, parsedLimit, parsedSkip });
+    const result = await this.projectsService.findAll(parsedLimit, parsedSkip);
     return successHandler({
       res,
       statusCode: HttpStatus.OK,
